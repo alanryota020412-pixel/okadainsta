@@ -1,0 +1,12 @@
+{
+  "name": "Circle Room",
+  "short_name": "CircleRoom",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#101f22",
+  "theme_color": "#0dccf2",
+  "icons": [
+    { "src": "/static/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/static/icons/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html class="dark" lang="ja"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Circle Room - 投稿作成</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=Noto+Sans+JP:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0dccf2",
+                        "background-light": "#f5f8f8",
+                        "background-dark": "#101f22",
+                        "surface-dark": "#16262a",
+                        "input-dark": "#1a2c30",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "Noto Sans JP", "sans-serif"],
+                        "sans": ["Noto Sans JP", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        body {
+            min-height: max(884px, 100dvh);
+        }
+        .fill-1 { font-variation-settings: 'FILL' 1; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white font-display overflow-hidden selection:bg-primary selection:text-white">
+<div class="relative flex h-full min-h-screen w-full flex-col overflow-hidden max-w-md mx-auto shadow-2xl bg-background-light dark:bg-background-dark">
+<header class="flex items-center justify-between px-4 py-3 bg-background-light/90 dark:bg-background-dark/90 backdrop-blur-md sticky top-0 z-50 border-b border-slate-200 dark:border-slate-800">
+<button class="flex items-center justify-center p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors">
+<span class="material-symbols-outlined text-slate-900 dark:text-white" style="font-size: 24px;">close</span>
+</button>
+<h1 class="text-lg font-bold tracking-tight">投稿作成</h1>
+<div class="w-10"></div>
+</header>
+<main class="flex-1 overflow-y-auto no-scrollbar pb-32">
+<div class="p-4">
+<div class="group relative flex flex-col items-center justify-center gap-4 rounded-xl border-2 border-dashed border-slate-300 dark:border-primary/30 bg-white dark:bg-surface-dark px-6 py-10 transition-all active:scale-[0.99] active:border-primary cursor-pointer">
+<div class="flex size-14 items-center justify-center rounded-full bg-primary/10 dark:bg-primary/20 text-primary">
+<span class="material-symbols-outlined" style="font-size: 32px;">add_photo_alternate</span>
+</div>
+<div class="text-center">
+<p class="text-base font-bold dark:text-white">イベント画像</p>
+<p class="text-xs text-slate-500 dark:text-slate-400 mt-1">タップして画像をアップロード (Max 5MB)</p>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-1 px-4">
+<div class="py-3">
+<label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">イベントタイトル <span class="text-red-500">*</span></label>
+<input class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-input-dark px-4 py-3.5 text-base text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-primary focus:ring-1 focus:ring-primary transition-all outline-none" placeholder="例：新入生歓迎会！" type="text"/>
+</div>
+<div class="py-3">
+<label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">サークル名</label>
+<div class="relative">
+<input class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-input-dark px-4 py-3.5 pl-11 text-base text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-primary focus:ring-1 focus:ring-primary transition-all outline-none" placeholder="例：テニスサークル" type="text"/>
+<div class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+<span class="material-symbols-outlined" style="font-size: 20px;">group</span>
+</div>
+</div>
+</div>
+<div class="py-3">
+<label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">日時 <span class="text-red-500">*</span></label>
+<div class="relative">
+<input class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-input-dark px-4 py-3.5 pr-12 text-base text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-primary focus:ring-1 focus:ring-primary transition-all outline-none" placeholder="日付と時刻を選択" type="text"/>
+<div class="absolute right-3 top-1/2 -translate-y-1/2 text-primary pointer-events-none flex items-center">
+<span class="material-symbols-outlined" style="font-size: 24px;">calendar_month</span>
+</div>
+</div>
+</div>
+<div class="py-3">
+<label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">場所</label>
+<div class="relative">
+<input class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-input-dark px-4 py-3.5 pr-12 text-base text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-primary focus:ring-1 focus:ring-primary transition-all outline-none" placeholder="例：学生会館 2F" type="text"/>
+<div class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none flex items-center">
+<span class="material-symbols-outlined" style="font-size: 24px;">pin_drop</span>
+</div>
+</div>
+</div>
+<div class="py-3">
+<label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">詳細</label>
+<textarea class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-input-dark px-4 py-3 text-base text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-primary focus:ring-1 focus:ring-primary transition-all outline-none min-h-[120px] resize-none" placeholder="イベントの詳細、持ち物、注意事項などを入力してください..."></textarea>
+</div>
+<div class="h-6"></div>
+<button class="w-full rounded-xl bg-primary hover:bg-cyan-400 text-background-dark font-bold text-lg h-14 shadow-lg shadow-primary/25 transition-all active:scale-[0.98] flex items-center justify-center gap-2 mb-10">
+<span class="material-symbols-outlined" style="font-size: 20px; font-weight: 600;">send</span>
+                    投稿する
+                </button>
+</div>
+</main>
+<nav class="absolute bottom-0 w-full bg-white dark:bg-surface-dark border-t border-slate-200 dark:border-slate-800 pb-[env(safe-area-inset-bottom)] z-50">
+  <div class="flex justify-between items-center h-16 px-1">
+
+    <a href="{% url 'home' %}" class="flex flex-col items-center justify-center flex-1 text-slate-400 hover:text-primary transition-colors">
+      <span class="material-symbols-outlined" style="font-size:24px;">home</span>
+      <span class="text-[10px] font-medium mt-0.5">ホーム</span>
+    </a>
+
+    <a href="{% url 'search' %}" class="flex flex-col items-center justify-center flex-1 text-slate-400 hover:text-primary transition-colors">
+      <span class="material-symbols-outlined" style="font-size:24px;">search</span>
+      <span class="text-[10px] font-medium mt-0.5">検索</span>
+    </a>
+
+    <a href="{% url 'messages' %}" class="flex flex-col items-center justify-center flex-1 text-slate-400 hover:text-primary transition-colors">
+      <span class="material-symbols-outlined" style="font-size:24px;">chat_bubble</span>
+      <span class="text-[10px] font-medium mt-0.5">メッセージ</span>
+    </a>
+
+    <a href="{% url 'create_post' %}" class="flex flex-col items-center justify-center flex-1 text-primary transition-colors">
+      <span class="material-symbols-outlined fill-1" style="font-size:24px;">add_box</span>
+      <span class="text-[10px] font-bold mt-0.5">投稿作成</span>
+    </a>
+
+    <a href="{% url 'profile' %}" class="flex flex-col items-center justify-center flex-1 text-slate-400 hover:text-primary transition-colors">
+      <div class="size-6 overflow-hidden rounded-full mb-0.5 border-2 border-transparent">
+        <img alt="User Profile Avatar" class="w-full h-full object-cover"
+          src="https://lh3.googleusercontent.com/aida-public/AB6AXuC92MKbVdvc697P1SoAqKhb4nZpVPq1wlDazOp811CVpN93BNj2bhjYrp_jSPApSACUUt2e7MJ0jVO_4Ncn_3W7f1Y904G6sFHldnRfe3ypbxCLPch5xvuotztuAqoPjrlZjwtyR1d39MRg7WNdGl2uGh8aFOqxQVXZq4eAFp6tMs-u_6WLT5BTO8bKmhUgC60mdiXLFrYpQ99SVaxorD14MonqbImmlptW0TJRNRadEPJigcxDvhDyL31Azca4AUsygcgO_EBCwFc" />
+      </div>
+      <span class="text-[10px] font-medium">プロフィール</span>
+    </a>
+
+  </div>
+</nav>
+
+</div>
+
+</body></html>
+
+{% include "core/nav.html" %}

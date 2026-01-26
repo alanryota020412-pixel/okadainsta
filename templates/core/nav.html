@@ -1,0 +1,30 @@
+<nav class="fixed bottom-0 max-w-md w-full z-50 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 pb-[env(safe-area-inset-bottom)]">
+  <div class="flex justify-around items-center h-14">
+
+    <a href="{% url 'home' %}" class="flex flex-col items-center justify-center flex-1 h-full gap-0.5 {% if active == 'home' %}text-primary{% else %}text-slate-500 dark:text-slate-400{% endif %}">
+      <span class="material-symbols-outlined {% if active == 'home' %}filled{% endif %} text-[26px]">home</span>
+      <span class="text-[10px] font-medium">ホーム</span>
+    </a>
+
+    <a href="{% url 'search' %}" class="flex flex-col items-center justify-center flex-1 h-full gap-0.5 {% if active == 'search' %}text-primary{% else %}text-slate-500 dark:text-slate-400{% endif %}">
+      <span class="material-symbols-outlined {% if active == 'search' %}filled{% endif %} text-[26px]">search</span>
+      <span class="text-[10px] font-medium">検索</span>
+    </a>
+
+    <a href="{% url 'messages' %}" class="flex flex-col items-center justify-center flex-1 h-full gap-0.5 {% if active == 'messages' %}text-primary{% else %}text-slate-500 dark:text-slate-400{% endif %}">
+      <span class="material-symbols-outlined {% if active == 'messages' %}filled{% endif %} text-[26px]">chat_bubble</span>
+      <span class="text-[10px] font-medium">メッセージ</span>
+    </a>
+
+    <a href="{% url 'create_post' %}" class="flex flex-col items-center justify-center flex-1 h-full gap-0.5 {% if active == 'create_post' %}text-primary{% else %}text-slate-500 dark:text-slate-400{% endif %}">
+      <span class="material-symbols-outlined {% if active == 'create_post' %}filled{% endif %} text-[26px]">add_box</span>
+      <span class="text-[10px] font-medium">投稿作成</span>
+    </a>
+
+    <a href="{% url 'profile' %}" class="flex flex-col items-center justify-center flex-1 h-full gap-0.5 {% if active == 'profile' %}text-primary{% else %}text-slate-500 dark:text-slate-400{% endif %}">
+      <span class="material-symbols-outlined {% if active == 'profile' %}filled{% endif %} text-[26px]">account_circle</span>
+      <span class="text-[10px] font-medium">プロフィール</span>
+    </a>
+
+  </div>
+</nav>

@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="ja" class="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Circle Room - Login</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+</head>
+<body class="min-h-screen bg-slate-950 text-white flex items-center justify-center p-6">
+  <div class="w-full max-w-md rounded-2xl border border-slate-700 bg-slate-900/60 p-8 shadow-xl">
+    <h1 class="text-3xl font-bold">Circle Room</h1>
+    <p class="mt-2 text-slate-300">ログインしてください</p>
+
+    {% if form.errors %}
+      <div class="mt-4 rounded-xl bg-red-500/10 border border-red-500/30 p-3 text-sm text-red-200">
+        ユーザー名またはパスワードが違います。
+      </div>
+    {% endif %}
+
+    <form method="post" class="mt-6 space-y-4">
+      {% csrf_token %}
+      <div>
+        <label class="block text-sm text-slate-300 mb-2">ユーザー名</label>
+        <input name="username" class="w-full rounded-xl bg-slate-800 border border-slate-700 px-4 py-3" required>
+      </div>
+      <div>
+        <label class="block text-sm text-slate-300 mb-2">パスワード</label>
+        <input name="password" type="password" class="w-full rounded-xl bg-slate-800 border border-slate-700 px-4 py-3" required>
+      </div>
+      <button class="w-full rounded-xl bg-cyan-400 text-slate-900 font-bold py-3">
+        ログイン
+      </button>
+    </form>
+  </div>
+</body>
+</html>
