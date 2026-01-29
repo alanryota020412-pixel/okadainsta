@@ -1,36 +1,45 @@
-<!DOCTYPE html>
-<html class="dark" lang="ja">##yyy
+<!doctype html>
+<html lang="ja" class="dark">
 <head>
   <meta charset="utf-8"/>
-  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Circle Room</title>
 
-  <link href="https://fonts.googleapis.com" rel="preconnect"/>
-  <link crossorigin href="https://fonts.gstatic.com" rel="preconnect"/>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet"/>
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" crossorigin href="https://fonts.gstatic.com"/>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap"
+    rel="stylesheet"
+  />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+    rel="stylesheet"
+  />
 
-  <script id="tailwind-config">
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script>
     tailwind.config = {
       darkMode: "class",
       theme: {
         extend: {
           colors: {
-            "primary": "#0dccf2",
+            primary: "#0dccf2",
             "background-light": "#f5f8f8",
             "background-dark": "#101f22",
             "surface-dark": "#16262a",
             "input-dark": "#1a2c30",
           },
           fontFamily: {
-            "display": ["Plus Jakarta Sans", "Noto Sans JP", "sans-serif"],
-            "sans": ["Noto Sans JP", "sans-serif"]
+            display: ["Plus Jakarta Sans", "Noto Sans JP", "sans-serif"],
+            sans: ["Noto Sans JP", "sans-serif"],
           },
-          borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+          borderRadius: { xl: "0.75rem" },
+          boxShadow: {
+            "soft": "0 10px 30px rgba(0,0,0,0.18)",
+          }
         },
       },
-    }
+    };
   </script>
 
   <style>
@@ -40,8 +49,8 @@
   </style>
 </head>
 
-<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white font-display selection:bg-primary selection:text-white">
-  <div class="relative flex h-full min-h-screen w-full flex-col max-w-md mx-auto shadow-2xl bg-background-light dark:bg-background-dark">
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white font-display">
+  <div class="relative flex min-h-screen w-full flex-col max-w-md mx-auto shadow-2xl bg-background-light dark:bg-background-dark">
 
     <!-- Header -->
     <header class="flex items-center justify-between px-4 py-3 bg-background-light/90 dark:bg-background-dark/90 backdrop-blur-md sticky top-0 z-50 border-b border-slate-200 dark:border-slate-800">
@@ -55,33 +64,27 @@
         </div>
       </div>
 
-      <div class="flex items-center gap-2">
-        <button id="notifBtn" class="relative flex items-center justify-center p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors">
-          <span class="material-symbols-outlined" style="font-size:24px;">notifications</span>
-          {% if user.is_authenticated and unread_notifs %}
-            <span id="notifBadge" class="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-primary text-background-dark text-[11px] font-bold flex items-center justify-center">
-              {{ unread_notifs }}
-            </span>
-          {% else %}
-            <span id="notifBadge" class="hidden absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-primary text-background-dark text-[11px] font-bold items-center justify-center"></span>
-          {% endif %}
-        </button>
-
-        {% if user.is_authenticated %}
-          <a href="{% url 'core:logout' %}" class="flex items-center justify-center p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors">
-            <span class="material-symbols-outlined" style="font-size:24px;">logout</span>
-          </a>
-        {% else %}
-          <a href="{% url 'core:login' %}" class="flex items-center justify-center px-3 py-2 rounded-full bg-primary text-background-dark font-bold text-sm">
-            ログイン
-          </a>
-        {% endif %}
+      <!-- Login導線なし -->
+      <div class="text-xs text-slate-500 dark:text-slate-400 px-3 py-2 rounded-full bg-slate-100 dark:bg-slate-800">
+        guestモード
       </div>
     </header>
 
-    <!-- Main (scrollable) -->
+    <!-- Main -->
     <main class="flex-1 overflow-y-auto no-scrollbar pb-28">
-      <!-- Tabs content -->
+
+      <!-- Flash messages -->
+      {% if messages %}
+        <div class="px-4 pt-3 grid gap-2">
+          {% for m in messages %}
+            <div class="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-surface-dark p-3 text-sm">
+              {{ m }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <!-- HOME -->
       <section id="tab-home" class="tab-section px-4 py-4">
         <div class="flex items-center justify-between">
           <h2 class="text-base font-bold tracking-tight">直近の新歓</h2>
@@ -90,14 +93,13 @@
 
         <div class="mt-3 grid gap-3">
           {% for p in posts %}
-            {% with ended=p.event_at|date:"U"|add:"0" %}
             <article class="rounded-2xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-800 overflow-hidden">
               {% if p.image %}
-                <button class="w-full block" type="button" onclick="openPostModal({{ p.id }})">
+                <button type="button" class="w-full block" onclick="openPostModal({{ p.id }})">
                   <img class="w-full h-44 object-cover" src="{{ p.image.url }}" alt="post image">
                 </button>
               {% else %}
-                <button class="w-full h-32 bg-slate-100 dark:bg-slate-800 flex items-center justify-center" type="button" onclick="openPostModal({{ p.id }})">
+                <button type="button" class="w-full h-32 bg-slate-100 dark:bg-slate-800 flex items-center justify-center" onclick="openPostModal({{ p.id }})">
                   <span class="text-slate-400 text-sm">画像なし（タップで詳細）</span>
                 </button>
               {% endif %}
@@ -114,21 +116,10 @@
                     </div>
                   </div>
 
-                  <!-- status pill -->
-                  {% if p.event_at < now %}
-                    <span class="shrink-0 inline-flex items-center px-2 py-1 rounded-full text-[11px] font-bold bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
-                      終了
-                    </span>
+                  {% if p.effective_status == "closed" %}
+                    <span class="shrink-0 inline-flex items-center px-2 py-1 rounded-full text-[11px] font-bold bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300">終了</span>
                   {% else %}
-                    {% if p.status == "open" %}
-                      <span class="shrink-0 inline-flex items-center px-2 py-1 rounded-full text-[11px] font-bold bg-primary/15 text-primary">
-                        募集中
-                      </span>
-                    {% else %}
-                      <span class="shrink-0 inline-flex items-center px-2 py-1 rounded-full text-[11px] font-bold bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
-                        終了
-                      </span>
-                    {% endif %}
+                    <span class="shrink-0 inline-flex items-center px-2 py-1 rounded-full text-[11px] font-bold bg-primary/15 text-primary">募集中</span>
                   {% endif %}
                 </div>
 
@@ -156,47 +147,16 @@
                   </div>
 
                   <div class="flex items-center gap-2">
-                    <button class="px-3 py-2 rounded-xl bg-slate-100 dark:bg-input-dark border border-slate-200 dark:border-slate-700 text-xs font-bold hover:opacity-90"
-                            type="button"
-                            onclick="openPostModal({{ p.id }})">
+                    <button type="button" class="px-3 py-2 rounded-xl bg-slate-100 dark:bg-input-dark border border-slate-200 dark:border-slate-700 text-xs font-bold hover:opacity-90" onclick="openPostModal({{ p.id }})">
                       詳細
                     </button>
-
-                    {% if user.is_authenticated %}
-                      <button class="px-3 py-2 rounded-xl bg-primary text-background-dark text-xs font-bold hover:opacity-90"
-                              type="button"
-                              onclick="toggleFavorite({{ p.id }})">
-                        保存
-                      </button>
-                    {% else %}
-                      <a class="px-3 py-2 rounded-xl bg-primary text-background-dark text-xs font-bold hover:opacity-90"
-                         href="{% url 'core:login' %}">
-                        保存
-                      </a>
-                    {% endif %}
+                    <button type="button" class="px-3 py-2 rounded-xl bg-primary text-background-dark text-xs font-bold hover:opacity-90" onclick="toggleFavorite({{ p.id }})">
+                      保存
+                    </button>
                   </div>
                 </div>
-
-                {% if user.is_authenticated and p.author_id == user.id %}
-                  <div class="mt-3 flex items-center gap-2">
-                    <button class="flex-1 px-3 py-2 rounded-xl bg-slate-100 dark:bg-input-dark border border-slate-200 dark:border-slate-700 text-xs font-bold"
-                            type="button"
-                            onclick="openEditModal({{ p.id }})">
-                      編集
-                    </button>
-                    <form class="flex-1" method="post" action="{% url 'core:post_delete' p.id %}">
-                      {% csrf_token %}
-                      <button class="w-full px-3 py-2 rounded-xl bg-red-500/15 text-red-400 border border-red-500/30 text-xs font-bold"
-                              type="submit"
-                              onclick="return confirm('この投稿を削除しますか？');">
-                        削除
-                      </button>
-                    </form>
-                  </div>
-                {% endif %}
               </div>
             </article>
-            {% endwith %}
           {% empty %}
             <div class="rounded-2xl border border-slate-200 dark:border-slate-800 p-6 text-center text-slate-500 dark:text-slate-400 bg-white dark:bg-surface-dark">
               まだ投稿がありません。
@@ -205,7 +165,7 @@
         </div>
       </section>
 
-      <!-- Search -->
+      <!-- SEARCH -->
       <section id="tab-search" class="tab-section px-4 py-4 hidden">
         <h2 class="text-base font-bold tracking-tight">検索</h2>
 
@@ -213,26 +173,33 @@
           <input type="hidden" name="tab" value="search"/>
 
           <div class="relative">
-            <input name="q" value="{{ search_query }}"
+            <input
+              name="q"
+              value="{{ search_query }}"
               class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-input-dark px-4 py-3 pl-11 text-base text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-primary focus:ring-1 focus:ring-primary transition-all outline-none"
               placeholder="タイトル / サークル名 / 場所で検索"
-              type="text"/>
+              type="text"
+            />
             <div class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
-              <span class="material-symbols-outlined" style="font-size: 22px;">search</span>
+              <span class="material-symbols-outlined" style="font-size:22px;">search</span>
             </div>
           </div>
 
           <div class="grid grid-cols-2 gap-2">
-            <select name="category"
-              class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-input-dark px-3 py-3 text-sm text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+            <select
+              name="category"
+              class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-input-dark px-3 py-3 text-sm text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+            >
               <option value="">カテゴリ（全て）</option>
               {% for val,label in category_choices %}
                 <option value="{{ val }}" {% if category == val %}selected{% endif %}>{{ label }}</option>
               {% endfor %}
             </select>
 
-            <select name="tag"
-              class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-input-dark px-3 py-3 text-sm text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+            <select
+              name="tag"
+              class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-input-dark px-3 py-3 text-sm text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+            >
               <option value="">タグ（全て）</option>
               {% for t in tags %}
                 <option value="{{ t.name }}" {% if tag == t.name %}selected{% endif %}>{{ t.name }}</option>
@@ -241,12 +208,17 @@
           </div>
 
           <label class="inline-flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
-            <input type="checkbox" name="open" value="1" {% if only_open %}checked{% endif %}
-              class="rounded border-slate-300 dark:border-slate-700 text-primary focus:ring-primary">
+            <input
+              type="checkbox"
+              name="open"
+              value="1"
+              {% if only_open %}checked{% endif %}
+              class="rounded border-slate-300 dark:border-slate-700 text-primary focus:ring-primary"
+            />
             募集中のみ（終了は除外）
           </label>
 
-          <button class="w-full rounded-xl bg-primary hover:bg-cyan-400 text-background-dark font-bold text-base h-12 shadow-lg shadow-primary/25 transition-all active:scale-[0.98]">
+          <button type="submit" class="w-full rounded-xl bg-primary hover:bg-cyan-400 text-background-dark font-bold text-base h-12 shadow-lg shadow-primary/25 transition-all active:scale-[0.98]">
             検索する
           </button>
         </form>
@@ -254,7 +226,7 @@
         <div class="mt-5 grid gap-3">
           {% for p in search_results %}
             <article class="rounded-2xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-800 overflow-hidden">
-              <button class="w-full block" type="button" onclick="openPostModal({{ p.id }})">
+              <button type="button" class="w-full block" onclick="openPostModal({{ p.id }})">
                 {% if p.image %}
                   <img class="w-full h-36 object-cover" src="{{ p.image.url }}" alt="post image">
                 {% else %}
@@ -263,15 +235,17 @@
                   </div>
                 {% endif %}
               </button>
+
               <div class="p-4">
                 <div class="flex items-start justify-between gap-2">
                   <div class="text-sm font-bold">{{ p.title }}</div>
-                  {% if p.event_at < now or p.status != "open" %}
+                  {% if p.effective_status == "closed" %}
                     <span class="shrink-0 inline-flex items-center px-2 py-1 rounded-full text-[11px] font-bold bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300">終了</span>
                   {% else %}
                     <span class="shrink-0 inline-flex items-center px-2 py-1 rounded-full text-[11px] font-bold bg-primary/15 text-primary">募集中</span>
                   {% endif %}
                 </div>
+
                 <div class="mt-2 text-xs text-slate-500 dark:text-slate-400">
                   {{ p.circle_name|default:"（サークル名未設定）" }} ・ {{ p.event_at|date:"m/d H:i" }} ・ {{ p.place|default:"（場所未設定）" }}
                 </div>
@@ -285,838 +259,333 @@
         </div>
       </section>
 
-      <!-- Messages -->
+      <!-- MESSAGES -->
       <section id="tab-messages" class="tab-section px-4 py-4 hidden">
         <h2 class="text-base font-bold tracking-tight">メッセージ</h2>
 
-        {% if not user.is_authenticated %}
-          <div class="mt-4 rounded-2xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-800 p-5">
-            <div class="text-sm font-bold">ログインするとメッセージが使えます</div>
-            <div class="mt-1 text-xs text-slate-500 dark:text-slate-400">参加申請した投稿の代表と、この中でやりとりできます。</div>
-            <a href="{% url 'core:login' %}" class="mt-4 inline-flex items-center justify-center w-full rounded-xl bg-primary text-background-dark font-bold h-12">
-              ログイン
-            </a>
+        <div class="mt-4 rounded-2xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-800 p-5">
+          <div class="text-sm font-bold">メッセージはまだ未実装</div>
+          <div class="mt-1 text-xs text-slate-500 dark:text-slate-400">
+            次の段階で「参加申請 → 自動DM作成」を作ると一気にそれっぽくなります。
           </div>
-        {% else %}
-          <div class="mt-3 grid gap-3">
-            {% for c in conversations %}
-              <button type="button"
-                class="w-full text-left rounded-2xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-800 p-4 hover:opacity-95"
-                onclick="openConversation({{ c.id }})">
-                <div class="flex items-center justify-between gap-3">
-                  <div class="font-bold text-sm line-clamp-1">{{ c.title }}</div>
-                  {% if c.unread %}
-                    <span class="min-w-[20px] h-[20px] px-2 rounded-full bg-primary text-background-dark text-[11px] font-bold flex items-center justify-center">{{ c.unread }}</span>
-                  {% endif %}
-                </div>
-                <div class="mt-1 text-xs text-slate-500 dark:text-slate-400 line-clamp-1">{{ c.last_message }}</div>
-              </button>
-            {% empty %}
-              <div class="rounded-2xl border border-slate-200 dark:border-slate-800 p-6 text-center text-slate-500 dark:text-slate-400 bg-white dark:bg-surface-dark">
-                まだメッセージがありません。<br/>参加申請すると自動でDMが作られます。
-              </div>
-            {% endfor %}
-          </div>
-
-          <!-- Conversation drawer -->
-          <div id="conversationPanel" class="fixed inset-0 z-[80] hidden">
-            <div class="absolute inset-0 bg-black/40" onclick="closeConversation()"></div>
-            <div class="absolute bottom-0 left-0 right-0 max-w-md mx-auto bg-white dark:bg-surface-dark rounded-t-3xl border-t border-slate-200 dark:border-slate-800 overflow-hidden">
-              <div class="flex items-center justify-between px-4 py-3 border-b border-slate-200 dark:border-slate-800">
-                <button class="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800" onclick="closeConversation()">
-                  <span class="material-symbols-outlined">close</span>
-                </button>
-                <div id="conversationTitle" class="text-sm font-bold line-clamp-1">メッセージ</div>
-                <div class="w-10"></div>
-              </div>
-
-              <div id="messagesBox" class="h-[55vh] overflow-y-auto no-scrollbar px-4 py-3 bg-slate-50 dark:bg-background-dark"></div>
-
-              <form id="sendMessageForm" class="p-3 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-surface-dark flex items-center gap-2" onsubmit="return sendMessage(event)">
-                {% csrf_token %}
-                <input id="messageInput"
-                  class="flex-1 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-input-dark px-4 py-3 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-primary focus:ring-1 focus:ring-primary outline-none"
-                  placeholder="メッセージを入力…" />
-                <button class="px-4 py-3 rounded-xl bg-primary text-background-dark font-bold">
-                  送信
-                </button>
-              </form>
-            </div>
-          </div>
-        {% endif %}
+        </div>
       </section>
 
-      <!-- Create -->
+      <!-- CREATE (スクショ寄せ) -->
       <section id="tab-create" class="tab-section hidden">
-        <div class="px-4 py-4">
-          <h2 class="text-base font-bold tracking-tight">投稿作成</h2>
-          <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">代表が新歓情報を投稿できます。</p>
+        <div class="px-4 pt-4 pb-2">
+          <div class="flex items-center justify-between">
+            <button type="button" class="p-2 -ml-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800" onclick="setTab('home', true)">
+              <span class="material-symbols-outlined">close</span>
+            </button>
+            <div class="text-base font-bold">投稿作成</div>
+            <div class="w-10"></div>
+          </div>
         </div>
 
-        {% if not user.is_authenticated %}
-          <div class="px-4 pb-6">
-            <div class="rounded-2xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-800 p-5">
-              <div class="text-sm font-bold">投稿作成はログインが必要です</div>
-              <a href="{% url 'core:login' %}" class="mt-4 inline-flex items-center justify-center w-full rounded-xl bg-primary text-background-dark font-bold h-12">
-                ログイン
-              </a>
+        <form class="px-4 pb-10" method="post" action="{% url 'core:post_create' %}" enctype="multipart/form-data">
+          {% csrf_token %}
+
+          <!-- 画面に出さないが保存には必要な値（view側でもデフォルト入れてるので、どっちでもOK） -->
+          <input type="hidden" name="category" value="other">
+          <input type="hidden" name="status" value="open">
+          <input type="hidden" name="tags" value="">
+
+          <!-- Image upload card -->
+          <div class="mt-3 rounded-2xl bg-white/5 border border-slate-700/60 overflow-hidden">
+            <label for="id_image" class="block p-4">
+              <div class="rounded-2xl border-2 border-dashed border-primary/35 bg-slate-900/10 dark:bg-slate-900/30 p-8 flex flex-col items-center justify-center text-center gap-3">
+                <div class="size-14 rounded-full bg-primary/15 text-primary flex items-center justify-center">
+                  <span class="material-symbols-outlined" style="font-size:26px;">add_photo_alternate</span>
+                </div>
+                <div class="text-base font-bold">イベント画像</div>
+                <div class="text-xs text-slate-400">タップして画像をアップロード（Max 5MB）</div>
+                <div id="imageName" class="text-xs text-slate-300 mt-2 hidden"></div>
+              </div>
+            </label>
+            <input id="id_image" name="image" type="file" accept="image/*" class="hidden">
+          </div>
+
+          <!-- Fields -->
+          <div class="mt-5 grid gap-4">
+            <!-- title -->
+            <div>
+              <div class="flex items-center gap-2 mb-2">
+                <div class="text-sm font-bold">イベントタイトル <span class="text-red-500">*</span></div>
+              </div>
+              <input
+                name="title"
+                required
+                placeholder="例：新入生歓迎会！"
+                class="w-full rounded-xl border border-slate-700/60 bg-input-dark px-4 py-4 text-sm text-white placeholder:text-slate-500 focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+                type="text"
+              />
+            </div>
+
+            <!-- circle_name -->
+            <div>
+              <div class="text-sm font-bold mb-2">サークル名</div>
+              <div class="relative">
+                <div class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500">
+                  <span class="material-symbols-outlined" style="font-size:20px;">group</span>
+                </div>
+                <input
+                  name="circle_name"
+                  placeholder="例：テニスサークル"
+                  class="w-full rounded-xl border border-slate-700/60 bg-input-dark pl-12 pr-4 py-4 text-sm text-white placeholder:text-slate-500 focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+                  type="text"
+                />
+              </div>
+            </div>
+
+            <!-- event_at -->
+            <div>
+              <div class="text-sm font-bold mb-2">日時 <span class="text-red-500">*</span></div>
+              <div class="relative">
+                <input
+                  name="event_at"
+                  required
+                  class="w-full rounded-xl border border-slate-700/60 bg-input-dark px-4 py-4 text-sm text-white placeholder:text-slate-500 focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+                  type="datetime-local"
+                />
+                <div class="absolute right-4 top-1/2 -translate-y-1/2 text-primary">
+                  <span class="material-symbols-outlined" style="font-size:22px;">calendar_month</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- place -->
+            <div>
+              <div class="text-sm font-bold mb-2">場所</div>
+              <div class="relative">
+                <input
+                  name="place"
+                  placeholder="例：学生会館 2F"
+                  class="w-full rounded-xl border border-slate-700/60 bg-input-dark px-4 py-4 text-sm text-white placeholder:text-slate-500 focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+                  type="text"
+                />
+                <div class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400">
+                  <span class="material-symbols-outlined" style="font-size:22px;">pin_drop</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- detail -->
+            <div>
+              <div class="text-sm font-bold mb-2">詳細</div>
+              <textarea
+                name="detail"
+                placeholder="イベントの詳細、持ち物、注意事項などを入力してください…"
+                class="w-full min-h-[140px] rounded-xl border border-slate-700/60 bg-input-dark px-4 py-4 text-sm text-white placeholder:text-slate-500 focus:border-primary focus:ring-1 focus:ring-primary outline-none resize-none"
+              ></textarea>
             </div>
           </div>
-        {% else %}
-          <form class="px-4 pb-10" method="post" action="{% url 'core:post_create' %}" enctype="multipart/form-data">
-            {% csrf_token %}
 
-            <div class="p-4">
-              <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">イベント画像</label>
-              <input name="image" type="file" accept="image/*"
-                     class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-input-dark px-4 py-3 text-sm">
-              <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">画像は任意（あると参加率が上がる）</p>
-            </div>
-
-            <div class="flex flex-col gap-1 px-4">
-              <div class="py-3">
-                <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">イベントタイトル <span class="text-red-500">*</span></label>
-                <input name="title"
-                  class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-input-dark px-4 py-3.5 text-base text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-primary focus:ring-1 focus:ring-primary transition-all outline-none"
-                  placeholder="例：新入生歓迎会！" type="text" required/>
-              </div>
-
-              <div class="py-3">
-                <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">サークル名</label>
-                <input name="circle_name"
-                  class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-input-dark px-4 py-3.5 text-base text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-primary focus:ring-1 focus:ring-primary transition-all outline-none"
-                  placeholder="空なら自分のサークル名が入ります" type="text"/>
-              </div>
-
-              <div class="py-3">
-                <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">日時 <span class="text-red-500">*</span></label>
-                <input name="event_at"
-                  class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-input-dark px-4 py-3.5 text-base text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary transition-all outline-none"
-                  type="datetime-local" required/>
-              </div>
-
-              <div class="py-3">
-                <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">場所</label>
-                <input name="place"
-                  class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-input-dark px-4 py-3.5 text-base text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-primary focus:ring-1 focus:ring-primary transition-all outline-none"
-                  placeholder="例：学生会館 2F" type="text"/>
-              </div>
-
-              <div class="grid grid-cols-2 gap-2 py-3">
-                <div>
-                  <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">カテゴリ</label>
-                  <select name="category"
-                    class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-input-dark px-3 py-3 text-sm text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none">
-                    {% for val,label in category_choices %}
-                      <option value="{{ val }}">{{ label }}</option>
-                    {% endfor %}
-                  </select>
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">募集</label>
-                  <select name="status"
-                    class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-input-dark px-3 py-3 text-sm text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none">
-                    <option value="open" selected>募集中</option>
-                    <option value="closed">終了</option>
-                  </select>
-                </div>
-              </div>
-
-              <div class="py-3">
-                <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">タグ（カンマ区切り）</label>
-                <input name="tags"
-                  class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-input-dark px-4 py-3.5 text-base text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-primary focus:ring-1 focus:ring-primary transition-all outline-none"
-                  placeholder="例：新歓, 初心者歓迎, 友達作り" type="text"/>
-              </div>
-
-              <div class="py-3">
-                <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">詳細</label>
-                <textarea name="detail"
-                  class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-input-dark px-4 py-3 text-base text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-primary focus:ring-1 focus:ring-primary transition-all outline-none min-h-[120px] resize-none"
-                  placeholder="内容、持ち物、初心者歓迎か、連絡方法（※メッセージでOK）など"></textarea>
-              </div>
-
-              <div class="h-3"></div>
-              <button class="w-full rounded-xl bg-primary hover:bg-cyan-400 text-background-dark font-bold text-lg h-14 shadow-lg shadow-primary/25 transition-all active:scale-[0.98] flex items-center justify-center gap-2 mb-10">
-                <span class="material-symbols-outlined" style="font-size: 20px; font-weight: 600;">send</span>
-                投稿する
-              </button>
-            </div>
-          </form>
-        {% endif %}
+          <!-- Submit -->
+          <div class="mt-6">
+            <button type="submit" class="w-full rounded-2xl bg-primary hover:bg-cyan-400 text-background-dark font-extrabold text-base h-14 shadow-lg shadow-primary/25 transition-all active:scale-[0.99] flex items-center justify-center gap-2">
+              <span class="material-symbols-outlined fill-1">play_arrow</span>
+              投稿する
+            </button>
+          </div>
+        </form>
       </section>
 
-      <!-- Profile -->
+      <!-- PROFILE (保存できる) -->
       <section id="tab-profile" class="tab-section px-4 py-4 hidden">
         <h2 class="text-base font-bold tracking-tight">プロフィール</h2>
+        <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Profile / Circle を編集して保存できます</p>
 
-        {% if not user.is_authenticated %}
-          <div class="mt-4 rounded-2xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-800 p-5">
-            <div class="text-sm font-bold">代表として使う場合はログインしてください</div>
-            <div class="mt-1 text-xs text-slate-500 dark:text-slate-400">サークル情報の編集・投稿管理ができます。</div>
-            <a href="{% url 'core:login' %}" class="mt-4 inline-flex items-center justify-center w-full rounded-xl bg-primary text-background-dark font-bold h-12">
-              ログイン
-            </a>
-          </div>
-        {% else %}
-          <!-- Profile card (デザイン編集しやすいシンプル構造) -->
-          <div class="mt-4 rounded-3xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-800 overflow-hidden">
-            <div class="p-5 flex items-center gap-4">
-              <div class="size-16 rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
-                {% if profile and profile.avatar %}
-                  <img src="{{ profile.avatar.url }}" class="w-full h-full object-cover" alt="avatar"/>
-                {% else %}
-                  <div class="w-full h-full flex items-center justify-center text-slate-400">
-                    <span class="material-symbols-outlined" style="font-size:28px;">person</span>
-                  </div>
-                {% endif %}
+        <form class="mt-4 grid gap-4" method="post" action="{% url 'core:profile_save' %}" enctype="multipart/form-data">
+          {% csrf_token %}
+
+          <div class="rounded-2xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-800 p-5">
+            <div class="text-sm font-bold">ユーザー情報（Profile）</div>
+
+            <div class="mt-4 grid gap-3">
+              <div>
+                <label class="block text-xs text-slate-500 dark:text-slate-400 mb-1">表示名</label>
+                <input name="display_name" value="{{ profile.display_name }}" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-input-dark px-4 py-3 text-sm" type="text">
               </div>
-              <div class="flex-1">
-                <div class="text-lg font-bold">{{ profile.display_name|default:user.username }}</div>
-                <div class="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                  {{ profile.school_year|default:"" }} {{ profile.role|default:"" }}
+
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <label class="block text-xs text-slate-500 dark:text-slate-400 mb-1">学年</label>
+                  <input name="school_year" value="{{ profile.school_year }}" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-input-dark px-4 py-3 text-sm" type="text">
+                </div>
+                <div>
+                  <label class="block text-xs text-slate-500 dark:text-slate-400 mb-1">役割</label>
+                  <input name="role" value="{{ profile.role }}" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-input-dark px-4 py-3 text-sm" type="text">
                 </div>
               </div>
-            </div>
 
-            <div class="px-5 pb-5 grid grid-cols-3 gap-3">
-              <div class="rounded-2xl bg-slate-50 dark:bg-background-dark border border-slate-200 dark:border-slate-800 p-3 text-center">
-                <div class="text-xl font-bold">{{ my_posts|length }}</div>
-                <div class="text-[11px] text-slate-500 dark:text-slate-400">投稿</div>
+              <div>
+                <label class="block text-xs text-slate-500 dark:text-slate-400 mb-1">自己紹介</label>
+                <textarea name="bio" class="w-full min-h-[110px] rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-input-dark px-4 py-3 text-sm resize-none">{{ profile.bio }}</textarea>
               </div>
-              <div class="rounded-2xl bg-slate-50 dark:bg-background-dark border border-slate-200 dark:border-slate-800 p-3 text-center">
-                <div class="text-xl font-bold">{{ saved_posts|length }}</div>
-                <div class="text-[11px] text-slate-500 dark:text-slate-400">保存</div>
-              </div>
-              <div class="rounded-2xl bg-slate-50 dark:bg-background-dark border border-slate-200 dark:border-slate-800 p-3 text-center">
-                <div class="text-xl font-bold">{{ unread_notifs|default:"0" }}</div>
-                <div class="text-[11px] text-slate-500 dark:text-slate-400">通知</div>
+
+              <div>
+                <label class="block text-xs text-slate-500 dark:text-slate-400 mb-1">アイコン</label>
+                <input name="avatar" type="file" accept="image/*" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-input-dark px-4 py-3 text-sm">
               </div>
             </div>
           </div>
 
-          <!-- Edit forms -->
-          <div class="mt-5 grid gap-4">
+          <div class="rounded-2xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-800 p-5">
+            <div class="text-sm font-bold">サークル情報（Circle）</div>
 
-            <form method="post" action="{% url 'core:profile_update' %}" enctype="multipart/form-data"
-                  class="rounded-2xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-800 p-4">
-              {% csrf_token %}
-              <div class="font-bold text-sm">プロフィール編集</div>
-
-              <div class="mt-3 grid gap-3">
-                <input name="display_name" value="{{ profile.display_name }}"
-                  class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-input-dark px-4 py-3 text-sm"
-                  placeholder="表示名">
-                <input name="school_year" value="{{ profile.school_year }}"
-                  class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-input-dark px-4 py-3 text-sm"
-                  placeholder="学年（例：1年生）">
-                <input name="role" value="{{ profile.role }}"
-                  class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-input-dark px-4 py-3 text-sm"
-                  placeholder="役職（例：代表）">
-                <textarea name="bio"
-                  class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-input-dark px-4 py-3 text-sm min-h-[90px]"
-                  placeholder="自己紹介">{{ profile.bio }}</textarea>
-
-                <input name="avatar" type="file" accept="image/*"
-                  class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-input-dark px-4 py-3 text-sm"/>
-
-                <button class="w-full rounded-xl bg-primary text-background-dark font-bold h-12">保存</button>
+            <div class="mt-4 grid gap-3">
+              <div>
+                <label class="block text-xs text-slate-500 dark:text-slate-400 mb-1">サークル名</label>
+                <input name="name" value="{{ circle.name }}" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-input-dark px-4 py-3 text-sm" type="text">
               </div>
-            </form>
 
-            <form method="post" action="{% url 'core:circle_update' %}"
-                  class="rounded-2xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-800 p-4">
-              {% csrf_token %}
-              <div class="font-bold text-sm">サークル情報編集</div>
-
-              <div class="mt-3 grid gap-3">
-                <input name="name" value="{{ circle.name }}"
-                  class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-input-dark px-4 py-3 text-sm"
-                  placeholder="サークル名">
-                <input name="activity_days" value="{{ circle.activity_days }}"
-                  class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-input-dark px-4 py-3 text-sm"
-                  placeholder="活動日（例：毎週水曜）">
-                <input name="members_count" value="{{ circle.members_count }}"
-                  class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-input-dark px-4 py-3 text-sm"
-                  placeholder="人数（例：30）" type="number">
-                <input name="sns_link" value="{{ circle.sns_link }}"
-                  class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-input-dark px-4 py-3 text-sm"
-                  placeholder="SNSリンク（Instagram等）">
-                <textarea name="description"
-                  class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-input-dark px-4 py-3 text-sm min-h-[90px]"
-                  placeholder="説明">{{ circle.description }}</textarea>
-
-                <button class="w-full rounded-xl bg-primary text-background-dark font-bold h-12">保存</button>
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <label class="block text-xs text-slate-500 dark:text-slate-400 mb-1">活動日</label>
+                  <input name="activity_days" value="{{ circle.activity_days }}" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-input-dark px-4 py-3 text-sm" type="text">
+                </div>
+                <div>
+                  <label class="block text-xs text-slate-500 dark:text-slate-400 mb-1">人数</label>
+                  <input name="members_count" value="{{ circle.members_count }}" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-input-dark px-4 py-3 text-sm" type="number" min="0">
+                </div>
               </div>
-            </form>
 
-            <div class="rounded-2xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-800 p-4">
-              <div class="font-bold text-sm">自分の投稿</div>
-              <div class="mt-3 grid gap-2">
-                {% for p in my_posts %}
-                  <button class="w-full text-left rounded-xl border border-slate-200 dark:border-slate-800 p-3 hover:opacity-95"
-                          type="button" onclick="openPostModal({{ p.id }})">
-                    <div class="text-sm font-bold line-clamp-1">{{ p.title }}</div>
-                    <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">{{ p.event_at|date:"Y/m/d H:i" }} ・ {{ p.place }}</div>
-                  </button>
-                {% empty %}
-                  <div class="text-xs text-slate-500 dark:text-slate-400">まだ投稿がありません。</div>
-                {% endfor %}
+              <div>
+                <label class="block text-xs text-slate-500 dark:text-slate-400 mb-1">SNSリンク</label>
+                <input name="sns_link" value="{{ circle.sns_link }}" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-input-dark px-4 py-3 text-sm" type="url">
+              </div>
+
+              <div>
+                <label class="block text-xs text-slate-500 dark:text-slate-400 mb-1">説明</label>
+                <textarea name="description" class="w-full min-h-[110px] rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-input-dark px-4 py-3 text-sm resize-none">{{ circle.description }}</textarea>
               </div>
             </div>
-
-            <div class="rounded-2xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-800 p-4">
-              <div class="font-bold text-sm">保存済み</div>
-              <div class="mt-3 grid gap-2">
-                {% for p in saved_posts %}
-                  <button class="w-full text-left rounded-xl border border-slate-200 dark:border-slate-800 p-3 hover:opacity-95"
-                          type="button" onclick="openPostModal({{ p.id }})">
-                    <div class="text-sm font-bold line-clamp-1">{{ p.title }}</div>
-                    <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">{{ p.circle_name }} ・ {{ p.event_at|date:"m/d H:i" }}</div>
-                  </button>
-                {% empty %}
-                  <div class="text-xs text-slate-500 dark:text-slate-400">まだ保存がありません。</div>
-                {% endfor %}
-              </div>
-            </div>
-
           </div>
-        {% endif %}
+
+          <button type="submit" class="w-full rounded-xl bg-primary hover:bg-cyan-400 text-background-dark font-bold text-base h-12 shadow-lg shadow-primary/25 transition-all active:scale-[0.98]">
+            保存する
+          </button>
+        </form>
       </section>
+
     </main>
 
     <!-- Bottom Nav -->
     <nav class="absolute bottom-0 w-full bg-white dark:bg-surface-dark border-t border-slate-200 dark:border-slate-800 pb-[env(safe-area-inset-bottom)] z-50">
       <div class="flex justify-between items-center h-16 px-1">
-        <button data-tab="home" class="nav-btn flex flex-col items-center justify-center flex-1 text-primary transition-colors">
-          <span class="material-symbols-outlined fill-1" style="font-size: 24px;">home</span>
+        <button type="button" data-tab="home" class="nav-btn flex flex-col items-center justify-center flex-1 text-primary transition-colors">
+          <span class="material-symbols-outlined fill-1" style="font-size:24px;">home</span>
           <span class="text-[10px] font-bold mt-0.5">ホーム</span>
         </button>
 
-        <button data-tab="search" class="nav-btn flex flex-col items-center justify-center flex-1 text-slate-400 hover:text-primary transition-colors">
-          <span class="material-symbols-outlined" style="font-size: 24px;">search</span>
+        <button type="button" data-tab="search" class="nav-btn flex flex-col items-center justify-center flex-1 text-slate-400 hover:text-primary transition-colors">
+          <span class="material-symbols-outlined" style="font-size:24px;">search</span>
           <span class="text-[10px] font-medium mt-0.5">検索</span>
         </button>
 
-        <button data-tab="messages" class="nav-btn flex flex-col items-center justify-center flex-1 text-slate-400 hover:text-primary transition-colors">
-          <span class="material-symbols-outlined" style="font-size: 24px;">chat_bubble</span>
+        <button type="button" data-tab="messages" class="nav-btn flex flex-col items-center justify-center flex-1 text-slate-400 hover:text-primary transition-colors">
+          <span class="material-symbols-outlined" style="font-size:24px;">chat_bubble</span>
           <span class="text-[10px] font-medium mt-0.5">メッセージ</span>
         </button>
 
-        <button data-tab="create" class="nav-btn flex flex-col items-center justify-center flex-1 text-slate-400 hover:text-primary transition-colors">
-          <span class="material-symbols-outlined" style="font-size: 24px;">add_box</span>
+        <button type="button" data-tab="create" class="nav-btn flex flex-col items-center justify-center flex-1 text-slate-400 hover:text-primary transition-colors">
+          <span class="material-symbols-outlined" style="font-size:24px;">add_box</span>
           <span class="text-[10px] font-medium mt-0.5">投稿作成</span>
         </button>
 
-        <button data-tab="profile" class="nav-btn flex flex-col items-center justify-center flex-1 text-slate-400 hover:text-primary transition-colors">
-          <div class="size-6 overflow-hidden rounded-full mb-0.5 border-2 border-transparent">
-            {% if user.is_authenticated and profile and profile.avatar %}
-              <img alt="User Profile Avatar" class="w-full h-full object-cover" src="{{ profile.avatar.url }}"/>
-            {% else %}
-              <div class="w-full h-full bg-slate-200 dark:bg-slate-800"></div>
-            {% endif %}
-          </div>
+        <button type="button" data-tab="profile" class="nav-btn flex flex-col items-center justify-center flex-1 text-slate-400 hover:text-primary transition-colors">
+          <div class="size-6 overflow-hidden rounded-full mb-0.5 border-2 border-transparent bg-slate-200 dark:bg-slate-800"></div>
           <span class="text-[10px] font-medium">プロフィール</span>
         </button>
       </div>
     </nav>
 
-    <!-- Post Modal -->
+    <!-- Post Modal (最低限) -->
     <div id="postModal" class="fixed inset-0 z-[70] hidden">
       <div class="absolute inset-0 bg-black/40" onclick="closePostModal()"></div>
-
       <div class="absolute bottom-0 left-0 right-0 max-w-md mx-auto bg-white dark:bg-surface-dark rounded-t-3xl border-t border-slate-200 dark:border-slate-800 overflow-hidden">
         <div class="flex items-center justify-between px-4 py-3 border-b border-slate-200 dark:border-slate-800">
-          <button class="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800" onclick="closePostModal()">
+          <button type="button" class="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800" onclick="closePostModal()">
             <span class="material-symbols-outlined">close</span>
           </button>
           <div class="text-sm font-bold">投稿詳細</div>
           <div class="w-10"></div>
         </div>
-
-        <div id="postModalBody" class="max-h-[70vh] overflow-y-auto no-scrollbar">
-          <!-- JSで埋める -->
+        <div id="postModalBody" class="max-h-[70vh] overflow-y-auto no-scrollbar p-4 text-sm text-slate-600 dark:text-slate-300">
+          <!-- JS で埋める -->
         </div>
       </div>
     </div>
 
-    <!-- Edit Modal -->
-    <div id="editModal" class="fixed inset-0 z-[75] hidden">
-      <div class="absolute inset-0 bg-black/40" onclick="closeEditModal()"></div>
+    <script>
+      // ---- Tab ----
+      const tabSections = document.querySelectorAll(".tab-section");
+      const navButtons = document.querySelectorAll(".nav-btn");
 
-      <div class="absolute bottom-0 left-0 right-0 max-w-md mx-auto bg-white dark:bg-surface-dark rounded-t-3xl border-t border-slate-200 dark:border-slate-800 overflow-hidden">
-        <div class="flex items-center justify-between px-4 py-3 border-b border-slate-200 dark:border-slate-800">
-          <button class="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800" onclick="closeEditModal()">
-            <span class="material-symbols-outlined">close</span>
-          </button>
-          <div class="text-sm font-bold">投稿編集</div>
-          <div class="w-10"></div>
-        </div>
+      function setTab(tab, push=true) {
+        tabSections.forEach(s => s.classList.add("hidden"));
+        const el = document.getElementById(`tab-${tab}`);
+        if (el) el.classList.remove("hidden");
 
-        <div class="max-h-[75vh] overflow-y-auto no-scrollbar p-4">
-          <form id="editForm" method="post">
-            {% csrf_token %}
-            <div class="grid gap-3">
-              <input id="editTitle" name="title" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-input-dark px-4 py-3 text-sm" placeholder="タイトル" required>
-              <input id="editCircle" name="circle_name" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-input-dark px-4 py-3 text-sm" placeholder="サークル名">
-              <input id="editEventAt" name="event_at" type="datetime-local" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-input-dark px-4 py-3 text-sm">
-              <input id="editPlace" name="place" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-input-dark px-4 py-3 text-sm" placeholder="場所">
-              <select id="editCategory" name="category" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-input-dark px-3 py-3 text-sm">
-                {% for val,label in category_choices %}
-                  <option value="{{ val }}">{{ label }}</option>
-                {% endfor %}
-              </select>
-              <select id="editStatus" name="status" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-input-dark px-3 py-3 text-sm">
-                <option value="open">募集中</option>
-                <option value="closed">終了</option>
-              </select>
-              <input id="editTags" name="tags" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-input-dark px-4 py-3 text-sm" placeholder="タグ（カンマ区切り）">
-              <textarea id="editDetail" name="detail" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-input-dark px-4 py-3 text-sm min-h-[120px]" placeholder="詳細"></textarea>
+        navButtons.forEach(b => {
+          const isActive = b.dataset.tab === tab;
+          b.classList.toggle("text-primary", isActive);
+          b.classList.toggle("text-slate-400", !isActive);
+        });
 
-              <button class="w-full rounded-xl bg-primary text-background-dark font-bold h-12">保存</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
+        if (push) {
+          const url = new URL(window.location.href);
+          url.searchParams.set("tab", tab);
+          window.history.pushState({}, "", url.toString());
+        }
+      }
 
-    <!-- Notifications Modal -->
-    <div id="notifModal" class="fixed inset-0 z-[90] hidden">
-      <div class="absolute inset-0 bg-black/40" onclick="closeNotifModal()"></div>
-      <div class="absolute bottom-0 left-0 right-0 max-w-md mx-auto bg-white dark:bg-surface-dark rounded-t-3xl border-t border-slate-200 dark:border-slate-800 overflow-hidden">
-        <div class="flex items-center justify-between px-4 py-3 border-b border-slate-200 dark:border-slate-800">
-          <button class="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800" onclick="closeNotifModal()">
-            <span class="material-symbols-outlined">close</span>
-          </button>
-          <div class="text-sm font-bold">通知</div>
-          <button class="px-3 py-2 rounded-xl bg-slate-100 dark:bg-input-dark border border-slate-200 dark:border-slate-700 text-xs font-bold"
-                  onclick="markNotificationsRead()">
-            全部既読
-          </button>
-        </div>
-        <div id="notifList" class="max-h-[70vh] overflow-y-auto no-scrollbar p-4 grid gap-2"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Posts data for JS -->
-  <script>
-    // ページにある posts/search_results をまとめて参照できるようにする
-    const POSTS = {
-      {% for p in posts %}
-        {{ p.id }}: {
-          id: {{ p.id }},
-          title: {{ p.title|escapejs|safe|default:"''" }},
-          circle_name: {{ p.circle_name|default:""|escapejs|safe|default:"''" }},
-          place: {{ p.place|default:""|escapejs|safe|default:"''" }},
-          detail: {{ p.detail|default:""|escapejs|safe|default:"''" }},
-          event_at: "{{ p.event_at|date:'c' }}",
-          event_at_label: "{{ p.event_at|date:'Y/m/d H:i' }}",
-          status: "{{ p.status }}",
-          category: "{{ p.category }}",
-          tags: [{% for t in p.tags.all %}"{{ t.name|escapejs }}"{% if not forloop.last %},{% endif %}{% endfor %}],
-          image_url: {% if p.image %}"{{ p.image.url }}"{% else %}null{% endif %},
-          author_id: {{ p.author_id }},
-          favs_count: {{ p.favs_count|default:"0" }},
-          views_count: {{ p.views_count|default:"0" }},
-        },
-      {% endfor %}
-      // 検索結果側にも含める（上書きOK）
-      {% for p in search_results %}
-        {{ p.id }}: {
-          id: {{ p.id }},
-          title: {{ p.title|escapejs|safe|default:"''" }},
-          circle_name: {{ p.circle_name|default:""|escapejs|safe|default:"''" }},
-          place: {{ p.place|default:""|escapejs|safe|default:"''" }},
-          detail: {{ p.detail|default:""|escapejs|safe|default:"''" }},
-          event_at: "{{ p.event_at|date:'c' }}",
-          event_at_label: "{{ p.event_at|date:'Y/m/d H:i' }}",
-          status: "{{ p.status }}",
-          category: "{{ p.category }}",
-          tags: [{% for t in p.tags.all %}"{{ t.name|escapejs }}"{% if not forloop.last %},{% endif %}{% endfor %}],
-          image_url: {% if p.image %}"{{ p.image.url }}"{% else %}null{% endif %},
-          author_id: {{ p.author_id }},
-          favs_count: {{ p.favs_count|default:"0" }},
-          views_count: {{ p.views_count|default:"0" }},
-        },
-      {% endfor %}
-    };
-
-    const IS_AUTH = {{ user.is_authenticated|yesno:"true,false" }};
-    const ME_ID = {% if user.is_authenticated %}{{ user.id }}{% else %}null{% endif %};
-
-    function getCookie(name) {
-      const value = `; ${document.cookie}`;
-      const parts = value.split(`; ${name}=`);
-      if (parts.length === 2) return parts.pop().split(';').shift();
-      return null;
-    }
-    const CSRF = getCookie("csrftoken");
-
-    // --- Tabs ---
-    const initialTab = "{{ initial_tab|default:'home' }}";
-    const tabSections = document.querySelectorAll(".tab-section");
-    const navButtons = document.querySelectorAll(".nav-btn");
-
-    function setTab(tab, push=true) {
-      tabSections.forEach(s => s.classList.add("hidden"));
-      const el = document.getElementById(`tab-${tab}`);
-      if (el) el.classList.remove("hidden");
-
-      navButtons.forEach(b => {
-        const isActive = b.dataset.tab === tab;
-        b.classList.toggle("text-primary", isActive);
-        b.classList.toggle("font-bold", isActive);
-        b.classList.toggle("text-slate-400", !isActive);
+      navButtons.forEach(btn => {
+        btn.addEventListener("click", () => setTab(btn.dataset.tab, true));
       });
 
-      if (push) {
+      window.addEventListener("popstate", () => {
         const url = new URL(window.location.href);
-        url.searchParams.set("tab", tab);
-        window.history.pushState({}, "", url.toString());
-      }
-    }
-
-    navButtons.forEach(btn => {
-      btn.addEventListener("click", () => {
-        const tab = btn.dataset.tab;
-        setTab(tab, true);
+        setTab(url.searchParams.get("tab") || "home", false);
       });
-    });
 
-    window.addEventListener("popstate", () => {
-      const url = new URL(window.location.href);
-      const tab = url.searchParams.get("tab") || "home";
-      setTab(tab, false);
-    });
+      setTab("{{ initial_tab|default:'home' }}", false);
 
-    // 初期タブ
-    setTab(initialTab, false);
+      // ---- Post Modal (最低限) ----
+      const postModal = document.getElementById("postModal");
+      const postModalBody = document.getElementById("postModalBody");
 
-    // --- Post Modal ---
-    const postModal = document.getElementById("postModal");
-    const postModalBody = document.getElementById("postModalBody");
-
-    async function openPostModal(postId) {
-      const p = POSTS[postId];
-      if (!p) return;
-
-      // view log（ログイン時のみ）
-      if (IS_AUTH) {
-        fetch(`/post/${postId}/viewlog/`, {
-          method: "POST",
-          headers: {"X-CSRFToken": CSRF},
-        }).catch(()=>{});
+      function openPostModal(postId) {
+        postModalBody.textContent = "投稿ID: " + postId + "（詳細表示は次の段階で実装）";
+        postModal.classList.remove("hidden");
+      }
+      function closePostModal() {
+        postModal.classList.add("hidden");
+        postModalBody.textContent = "";
       }
 
-      const mapsUrl = p.place ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.place)}` : null;
-      const ended = new Date(p.event_at) < new Date();
-
-      const tagsHtml = (p.tags && p.tags.length)
-        ? `<div class="flex flex-wrap gap-2 mt-2">${p.tags.map(t=>`<span class="px-2 py-1 rounded-full text-[11px] font-bold bg-primary/15 text-primary">${t}</span>`).join("")}</div>`
-        : "";
-
-      const statusHtml = ended || p.status !== "open"
-        ? `<span class="inline-flex items-center px-2 py-1 rounded-full text-[11px] font-bold bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300">終了</span>`
-        : `<span class="inline-flex items-center px-2 py-1 rounded-full text-[11px] font-bold bg-primary/15 text-primary">募集中</span>`;
-
-      const imgHtml = p.image_url
-        ? `<img src="${p.image_url}" class="w-full h-52 object-cover" alt="image">`
-        : `<div class="w-full h-40 bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 text-sm">画像なし</div>`;
-
-      let actionHtml = "";
-
-      if (!IS_AUTH) {
-        actionHtml = `
-          <div class="grid gap-2 mt-4">
-            <a href="{% url 'core:login' %}" class="w-full h-12 rounded-xl bg-primary text-background-dark font-bold flex items-center justify-center">ログインして保存/参加</a>
-          </div>
-        `;
-      } else {
-        actionHtml = `
-          <div class="grid grid-cols-2 gap-2 mt-4">
-            <button class="h-12 rounded-xl bg-primary text-background-dark font-bold" onclick="toggleFavorite(${p.id})">保存</button>
-            <button class="h-12 rounded-xl bg-slate-100 dark:bg-input-dark border border-slate-200 dark:border-slate-700 font-bold"
-                    onclick="applyToPost(${p.id})" ${ended || p.status !== "open" ? "disabled" : ""}>
-              参加申請 → DM
-            </button>
-          </div>
-        `;
+      // ---- Favorite（未実装でもOK） ----
+      function toggleFavorite(postId) {
+        alert("保存（favorite）はまだ未実装です: " + postId);
       }
 
-      const editOwnerHtml = (IS_AUTH && ME_ID === p.author_id)
-        ? `
-          <div class="grid grid-cols-2 gap-2 mt-3">
-            <button class="h-12 rounded-xl bg-slate-100 dark:bg-input-dark border border-slate-200 dark:border-slate-700 font-bold" onclick="openEditModal(${p.id})">編集</button>
-            <form method="post" action="/post/${p.id}/delete/" onsubmit="return confirm('削除しますか？');">
-              <input type="hidden" name="csrfmiddlewaretoken" value="${getCookie("csrftoken") || ""}">
-              <button class="w-full h-12 rounded-xl bg-red-500/15 text-red-400 border border-red-500/30 font-bold">削除</button>
-            </form>
-          </div>
-        ` : "";
-
-      postModalBody.innerHTML = `
-        ${imgHtml}
-        <div class="p-4">
-          <div class="flex items-start justify-between gap-2">
-            <div>
-              <div class="text-base font-bold leading-snug">${escapeHtml(p.title)}</div>
-              <div class="mt-1 text-xs text-slate-500 dark:text-slate-400">${escapeHtml(p.circle_name || "（サークル名未設定）")}</div>
-            </div>
-            ${statusHtml}
-          </div>
-
-          ${tagsHtml}
-
-          <div class="mt-4 grid gap-2 text-sm">
-            <div class="flex items-center gap-2 text-slate-700 dark:text-slate-200">
-              <span class="material-symbols-outlined text-primary" style="font-size:20px;">calendar_month</span>
-              <span>${escapeHtml(p.event_at_label)}</span>
-            </div>
-            <div class="flex items-center gap-2 text-slate-700 dark:text-slate-200">
-              <span class="material-symbols-outlined text-slate-400" style="font-size:20px;">pin_drop</span>
-              <span class="flex-1">${escapeHtml(p.place || "（場所未設定）")}</span>
-              ${mapsUrl ? `<a class="px-3 py-2 rounded-xl bg-slate-100 dark:bg-input-dark border border-slate-200 dark:border-slate-700 text-xs font-bold"
-                               target="_blank" rel="noopener"
-                               href="${mapsUrl}">地図</a>` : ""}
-            </div>
-          </div>
-
-          <div class="mt-4 text-sm text-slate-700 dark:text-slate-200 whitespace-pre-wrap leading-relaxed">
-            ${escapeHtml(p.detail || "（詳細なし）")}
-          </div>
-
-          ${actionHtml}
-          ${editOwnerHtml}
-        </div>
-      `;
-
-      postModal.classList.remove("hidden");
-    }
-
-    function closePostModal() {
-      postModal.classList.add("hidden");
-      postModalBody.innerHTML = "";
-    }
-
-    function escapeHtml(str) {
-      if (str === null || str === undefined) return "";
-      return String(str)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-    }
-
-    // --- Favorite ---
-    async function toggleFavorite(postId) {
-      if (!IS_AUTH) { window.location.href = "{% url 'core:login' %}"; return; }
-      const res = await fetch(`/post/${postId}/favorite/`, {
-        method: "POST",
-        headers: {"X-CSRFToken": CSRF},
-      });
-      if (!res.ok) return;
-      // 体感：保存できたら通知も更新
-      await refreshNotificationsBadge();
-      // モーダル開いてたら軽く更新（閉じててもOK）
-      // ここでは簡略化：アラートでOK
-      // alert("保存を更新しました");
-    }
-
-    // --- Apply -> DM ---
-    async function applyToPost(postId) {
-      if (!IS_AUTH) { window.location.href = "{% url 'core:login' %}"; return; }
-      const res = await fetch(`/post/${postId}/apply/`, {
-        method: "POST",
-        headers: {"X-CSRFToken": CSRF},
-      });
-      const data = await res.json().catch(()=>null);
-      if (!data || !data.ok) {
-        alert("申請できません（終了している可能性があります）");
-        return;
+      // ---- Create: 画像名表示 ----
+      const imgInput = document.getElementById("id_image");
+      const imageName = document.getElementById("imageName");
+      if (imgInput && imageName) {
+        imgInput.addEventListener("change", () => {
+          if (imgInput.files && imgInput.files[0]) {
+            imageName.textContent = "選択中: " + imgInput.files[0].name;
+            imageName.classList.remove("hidden");
+          } else {
+            imageName.textContent = "";
+            imageName.classList.add("hidden");
+          }
+        });
       }
-      if (data.conversation_id) {
-        closePostModal();
-        setTab("messages", true);
-        openConversation(data.conversation_id);
-      }
-      await refreshNotificationsBadge();
-    }
+    </script>
 
-    // --- Edit modal ---
-    const editModal = document.getElementById("editModal");
-    const editForm = document.getElementById("editForm");
-
-    function openEditModal(postId) {
-      const p = POSTS[postId];
-      if (!p) return;
-      if (!IS_AUTH || ME_ID !== p.author_id) return;
-
-      editForm.action = `/post/${postId}/edit/`;
-      document.getElementById("editTitle").value = p.title || "";
-      document.getElementById("editCircle").value = p.circle_name || "";
-      document.getElementById("editPlace").value = p.place || "";
-      document.getElementById("editDetail").value = p.detail || "";
-      document.getElementById("editStatus").value = p.status || "open";
-      document.getElementById("editCategory").value = p.category || "other";
-      document.getElementById("editTags").value = (p.tags || []).join(", ");
-
-      // datetime-local へ（YYYY-MM-DDTHH:MM）
-      const d = new Date(p.event_at);
-      const yyyy = d.getFullYear();
-      const mm = String(d.getMonth()+1).padStart(2,"0");
-      const dd = String(d.getDate()).padStart(2,"0");
-      const hh = String(d.getHours()).padStart(2,"0");
-      const mi = String(d.getMinutes()).padStart(2,"0");
-      document.getElementById("editEventAt").value = `${yyyy}-${mm}-${dd}T${hh}:${mi}`;
-
-      editModal.classList.remove("hidden");
-    }
-    function closeEditModal(){ editModal.classList.add("hidden"); }
-
-    // --- Notifications ---
-    const notifBtn = document.getElementById("notifBtn");
-    const notifModal = document.getElementById("notifModal");
-    const notifList = document.getElementById("notifList");
-    const notifBadge = document.getElementById("notifBadge");
-
-    notifBtn.addEventListener("click", () => {
-      if (!IS_AUTH) { window.location.href = "{% url 'core:login' %}"; return; }
-      openNotifModal();
-    });
-
-    async function openNotifModal() {
-      notifModal.classList.remove("hidden");
-      await loadNotifications();
-    }
-    function closeNotifModal() { notifModal.classList.add("hidden"); }
-
-    async function loadNotifications() {
-      notifList.innerHTML = `<div class="text-sm text-slate-500 dark:text-slate-400">読み込み中...</div>`;
-      const res = await fetch(`/notifications/`);
-      const data = await res.json().catch(()=>null);
-      if (!data || !data.ok) {
-        notifList.innerHTML = `<div class="text-sm text-slate-500 dark:text-slate-400">取得できませんでした</div>`;
-        return;
-      }
-      const items = data.notifications || [];
-      if (!items.length) {
-        notifList.innerHTML = `<div class="text-sm text-slate-500 dark:text-slate-400">通知はありません</div>`;
-        return;
-      }
-      notifList.innerHTML = items.map(n => `
-        <a href="${n.url || '/'}" class="block rounded-2xl border border-slate-200 dark:border-slate-800 p-4 bg-white dark:bg-background-dark hover:opacity-95">
-          <div class="flex items-start justify-between gap-2">
-            <div class="text-sm font-bold">${escapeHtml(n.text)}</div>
-            <div class="text-[11px] text-slate-500 dark:text-slate-400">${escapeHtml(n.created_at)}</div>
-          </div>
-          <div class="mt-1 text-xs ${n.is_read ? 'text-slate-400' : 'text-primary font-bold'}">${n.is_read ? '既読' : '未読'}</div>
-        </a>
-      `).join("");
-    }
-
-    async function markNotificationsRead() {
-      await fetch(`/notifications/read/`, {
-        method: "POST",
-        headers: {"X-CSRFToken": CSRF},
-      }).catch(()=>{});
-      await refreshNotificationsBadge(true);
-      await loadNotifications();
-    }
-
-    async function refreshNotificationsBadge(forceZero=false) {
-      if (!IS_AUTH) return;
-      if (forceZero) {
-        notifBadge.classList.add("hidden");
-        notifBadge.textContent = "";
-        return;
-      }
-      // 簡易：通知一覧を取って未読数を計算
-      const res = await fetch(`/notifications/`);
-      const data = await res.json().catch(()=>null);
-      if (!data || !data.ok) return;
-      const unread = (data.notifications || []).filter(x => !x.is_read).length;
-      if (unread > 0) {
-        notifBadge.classList.remove("hidden");
-        notifBadge.textContent = unread;
-      } else {
-        notifBadge.classList.add("hidden");
-        notifBadge.textContent = "";
-      }
-    }
-
-    // --- Messages ---
-    let currentConversationId = null;
-    const conversationPanel = document.getElementById("conversationPanel");
-    const conversationTitle = document.getElementById("conversationTitle");
-    const messagesBox = document.getElementById("messagesBox");
-    const messageInput = document.getElementById("messageInput");
-
-    async function openConversation(conversationId) {
-      if (!IS_AUTH) return;
-      currentConversationId = conversationId;
-      conversationPanel.classList.remove("hidden");
-      messagesBox.innerHTML = `<div class="text-sm text-slate-500 dark:text-slate-400 p-4">読み込み中...</div>`;
-
-      const res = await fetch(`/messages/${conversationId}/`);
-      const data = await res.json().catch(()=>null);
-      if (!data || !data.ok) {
-        messagesBox.innerHTML = `<div class="text-sm text-slate-500 dark:text-slate-400 p-4">取得できませんでした</div>`;
-        return;
-      }
-      conversationTitle.textContent = data.conversation?.title || "メッセージ";
-
-      const msgs = data.messages || [];
-      messagesBox.innerHTML = msgs.map(m => {
-        const side = m.is_me ? "justify-end" : "justify-start";
-        const bubble = m.is_me ? "bg-primary text-background-dark" : "bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-800";
-        return `
-          <div class="flex ${side} mb-2">
-            <div class="max-w-[78%] rounded-2xl px-4 py-3 text-sm ${bubble}">
-              <div class="text-[11px] ${m.is_me ? 'text-background-dark/80' : 'text-slate-500 dark:text-slate-400'} mb-1">${escapeHtml(m.sender_name)} ・ ${escapeHtml(m.created_at)}</div>
-              <div class="whitespace-pre-wrap leading-relaxed">${escapeHtml(m.body)}</div>
-            </div>
-          </div>
-        `;
-      }).join("");
-
-      // 下までスクロール
-      messagesBox.scrollTop = messagesBox.scrollHeight;
-
-      // バッジ更新
-      await refreshNotificationsBadge();
-    }
-
-    function closeConversation() {
-      conversationPanel.classList.add("hidden");
-      currentConversationId = null;
-      messagesBox.innerHTML = "";
-      messageInput.value = "";
-    }
-
-    async function sendMessage(e) {
-      e.preventDefault();
-      if (!currentConversationId) return false;
-      const body = (messageInput.value || "").trim();
-      if (!body) return false;
-
-      const form = new FormData();
-      form.append("body", body);
-
-      const res = await fetch(`/messages/${currentConversationId}/send/`, {
-        method: "POST",
-        headers: {"X-CSRFToken": CSRF},
-        body: form
-      });
-      const data = await res.json().catch(()=>null);
-      if (!data || !data.ok) return false;
-
-      messageInput.value = "";
-      // 再読み込み（簡単・確実）
-      await openConversation(currentConversationId);
-      return false;
-    }
-  </script>
+  </div>
 </body>
 </html>

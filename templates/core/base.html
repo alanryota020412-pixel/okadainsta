@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ja" class="dark">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}Circle Room{% endblock %}</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" crossorigin href="https://fonts.gstatic.com"/>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap"
+    rel="stylesheet"
+  />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+    rel="stylesheet"
+  />
+
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            primary: "#0dccf2",
+            "background-light": "#f5f8f8",
+            "background-dark": "#101f22",
+            "surface-dark": "#16262a",
+            "input-dark": "#1a2c30",
+          },
+          fontFamily: {
+            display: ["Plus Jakarta Sans", "Noto Sans JP", "sans-serif"],
+            sans: ["Noto Sans JP", "sans-serif"],
+          },
+          borderRadius: { xl: "0.75rem" },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    .fill-1 { font-variation-settings: 'FILL' 1; }
+  </style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white font-display">
+  {% block body %}{% endblock %}
+</body>
+</html>

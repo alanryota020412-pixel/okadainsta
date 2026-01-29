@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>ログイン</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+</head>
+<body class="bg-slate-100">
+  <div class="max-w-md mx-auto p-6">
+    <div class="bg-white rounded-2xl p-6 shadow">
+      <h1 class="text-xl font-bold">ログイン</h1>
+
+      {% if error %}
+        <div class="mt-3 p-3 rounded-xl bg-red-50 text-red-600 text-sm">{{ error }}</div>
+      {% endif %}
+
+      <form method="post" class="mt-4 grid gap-3">
+        {% csrf_token %}
+        <input name="username" class="w-full rounded-xl border px-4 py-3" placeholder="ユーザー名" required>
+        <input name="password" type="password" class="w-full rounded-xl border px-4 py-3" placeholder="パスワード" required>
+        <button class="w-full rounded-xl bg-black text-white font-bold py-3">ログイン</button>
+      </form>
+
+      <a class="inline-block mt-4 text-sm text-blue-600" href="{% url 'core:home' %}">← 戻る</a>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<section id="tab-home" class="tab-section px-4 py-4">
+  <div class="flex items-center justify-between">
+    <h2 class="text-base font-bold tracking-tight">直近の新歓</h2>
+    <div class="text-xs text-slate-500 dark:text-slate-400">直近</div>
+  </div>
+
+  <div class="mt-3 grid gap-3">
+    {% for p in posts %}
+      <article class="rounded-2xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-800 overflow-hidden">
+        {% if p.image %}
+          <button type="button" class="w-full block" onclick="openPostModal({{ p.id }})">
+            <img class="w-full h-44 object-cover" src="{{ p.image.url }}" alt="post image">
+          </button>
+        {% else %}
+          <button type="button" class="w-full h-32 bg-slate-100 dark:bg-slate-800 flex items-center justify-center" onclick="openPostModal({{ p.id }})">
+            <span class="text-slate-400 text-sm">画像なし（タップで詳細）</span>
+          </button>
+        {% endif %}
+
+        <div class="p-4">
+          <div class="flex items-start justify-between gap-2">
+            <div>
+              <div class="text-sm font-bold leading-snug">{{ p.title }}</div>
+              <div class="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                <span class="inline-flex items-center gap-1">
+                  <span class="material-symbols-outlined" style="font-size:16px;">group</span>
+                  {{ p.circle_name|default:"（サークル名未設定）" }}
+                </span>
+              </div>
+            </div>
+
+            {% if p.effective_status == "closed" %}
+              <span class="shrink-0 inline-flex items-center px-2 py-1 rounded-full text-[11px] font-bold bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300">終了</span>
+            {% else %}
+              <span class="shrink-0 inline-flex items-center px-2 py-1 rounded-full text-[11px] font-bold bg-primary/15 text-primary">募集中</span>
+            {% endif %}
+          </div>
+
+          <div class="mt-3 grid gap-2 text-xs text-slate-600 dark:text-slate-300">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-primary" style="font-size:18px;">calendar_month</span>
+              <span>{{ p.event_at|date:"Y/m/d H:i" }}</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-slate-400" style="font-size:18px;">pin_drop</span>
+              <span class="line-clamp-1">{{ p.place|default:"（場所未設定）" }}</span>
+            </div>
+          </div>
+
+          <div class="mt-4 flex items-center justify-end">
+            <button type="button" class="px-3 py-2 rounded-xl bg-slate-100 dark:bg-input-dark border border-slate-200 dark:border-slate-700 text-xs font-bold hover:opacity-90" onclick="openPostModal({{ p.id }})">
+              詳細
+            </button>
+          </div>
+        </div>
+      </article>
+    {% empty %}
+      <div class="rounded-2xl border border-slate-200 dark:border-slate-800 p-6 text-center text-slate-500 dark:text-slate-400 bg-white dark:bg-surface-dark">
+        まだ投稿がありません。
+      </div>
+    {% endfor %}
+  </div>
+</section>
