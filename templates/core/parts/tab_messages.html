@@ -1,0 +1,29 @@
+<section id="tab-messages" class="tab-section px-4 py-4 hidden">
+  <h2 class="text-base font-bold tracking-tight">メッセージ</h2>
+
+  <div class="mt-4 rounded-2xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-800 p-5">
+    <div class="text-sm font-bold">メッセージ機能はこれから実装</div>
+    <div class="mt-1 text-xs text-slate-500 dark:text-slate-400">
+      ここはUIだけ先に復活しています（後で DM / 会話一覧 / 送信を繋ぎます）。
+    </div>
+
+    <div class="mt-4 grid gap-3">
+      {% for c in conversations %}
+        <button type="button" class="w-full text-left rounded-2xl bg-slate-50 dark:bg-background-dark border border-slate-200 dark:border-slate-800 p-4 hover:opacity-95"
+          onclick="openConversation({{ c.id }})">
+          <div class="flex items-center justify-between gap-3">
+            <div class="font-bold text-sm line-clamp-1">{{ c.title|default:"（会話）" }}</div>
+            {% if c.unread %}
+              <span class="min-w-[20px] h-[20px] px-2 rounded-full bg-primary text-background-dark text-[11px] font-bold flex items-center justify-center">{{ c.unread }}</span>
+            {% endif %}
+          </div>
+          <div class="mt-1 text-xs text-slate-500 dark:text-slate-400 line-clamp-1">{{ c.last_message|default:"（最後のメッセージ）" }}</div>
+        </button>
+      {% empty %}
+        <div class="rounded-2xl border border-slate-200 dark:border-slate-800 p-6 text-center text-slate-500 dark:text-slate-400 bg-white dark:bg-surface-dark">
+          まだメッセージがありません。
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>

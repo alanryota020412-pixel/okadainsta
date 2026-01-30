@@ -1,0 +1,15 @@
+<div id="postModal" class="fixed inset-0 z-[70] hidden">
+  <div class="absolute inset-0 bg-black/40" onclick="closePostModal()"></div>
+  <div class="absolute bottom-0 left-0 right-0 max-w-md mx-auto bg-white dark:bg-surface-dark rounded-t-3xl border-t border-slate-200 dark:border-slate-800 overflow-hidden">
+    <div class="flex items-center justify-between px-4 py-3 border-b border-slate-200 dark:border-slate-800">
+      <button type="button" class="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800" onclick="closePostModal()">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+      <div class="text-sm font-bold">投稿詳細</div>
+      <div class="w-10"></div>
+    </div>
+    <div id="postModalBody" class="max-h-[70vh] overflow-y-auto no-scrollbar p-4 text-sm text-slate-600 dark:text-slate-300">
+      <!-- JS で埋める -->
+    </div>
+  </div>
+</div>

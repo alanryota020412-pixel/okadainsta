@@ -1,0 +1,51 @@
+<script>
+  const tabSections = document.querySelectorAll(".tab-section");
+  const navButtons = document.querySelectorAll(".nav-btn");
+
+  function setTab(tab, push=true) {
+    tabSections.forEach(s => s.classList.add("hidden"));
+    const el = document.getElementById(`tab-${tab}`);
+    if (el) el.classList.remove("hidden");
+
+    navButtons.forEach(b => {
+      const isActive = b.dataset.tab === tab;
+      b.classList.toggle("text-primary", isActive);
+      b.classList.toggle("text-slate-400", !isActive);
+    });
+
+    if (push) {
+      const url = new URL(window.location.href);
+      url.searchParams.set("tab", tab);
+      window.history.pushState({}, "", url.toString());
+    }
+  }
+
+  navButtons.forEach(btn => {
+    btn.addEventListener("click", () => setTab(btn.dataset.tab, true));
+  });
+
+  window.addEventListener("popstate", () => {
+    const url = new URL(window.location.href);
+    setTab(url.searchParams.get("tab") || "home", false);
+  });
+
+  setTab("{{ initial_tab|default:'home' }}", false);
+
+  // Modal
+  const postModal = document.getElementById("postModal");
+  const postModalBody = document.getElementById("postModalBody");
+
+  function openPostModal(postId) {
+    postModalBody.textContent = "投稿ID: " + postId + "（ここは後で詳細表示を実装）";
+    postModal.classList.remove("hidden");
+  }
+  function closePostModal() {
+    postModal.classList.add("hidden");
+    postModalBody.textContent = "";
+  }
+
+  function toggleFavorite(postId) {
+    alert("保存（favorite）はまだ未実装です: " + postId);
+  }
+  function openConversation(id) { alert("会話: " + id); }
+</script>

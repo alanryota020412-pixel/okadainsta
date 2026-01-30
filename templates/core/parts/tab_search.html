@@ -18,20 +18,14 @@
     </div>
 
     <div class="grid grid-cols-2 gap-2">
-      <select
-        name="category"
-        class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-input-dark px-3 py-3 text-sm text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
-      >
+      <select name="category" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-input-dark px-3 py-3 text-sm text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none">
         <option value="">カテゴリ（全て）</option>
         {% for val,label in category_choices %}
           <option value="{{ val }}" {% if category == val %}selected{% endif %}>{{ label }}</option>
         {% endfor %}
       </select>
 
-      <select
-        name="tag"
-        class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-input-dark px-3 py-3 text-sm text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
-      >
+      <select name="tag" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-input-dark px-3 py-3 text-sm text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none">
         <option value="">タグ（全て）</option>
         {% for t in tags %}
           <option value="{{ t.name }}" {% if tag == t.name %}selected{% endif %}>{{ t.name }}</option>
@@ -40,13 +34,8 @@
     </div>
 
     <label class="inline-flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
-      <input
-        type="checkbox"
-        name="open"
-        value="1"
-        {% if only_open %}checked{% endif %}
-        class="rounded border-slate-300 dark:border-slate-700 text-primary focus:ring-primary"
-      />
+      <input type="checkbox" name="open" value="1" {% if only_open %}checked{% endif %}
+        class="rounded border-slate-300 dark:border-slate-700 text-primary focus:ring-primary" />
       募集中のみ（終了は除外）
     </label>
 

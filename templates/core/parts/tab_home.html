@@ -1,7 +1,7 @@
 <section id="tab-home" class="tab-section px-4 py-4">
   <div class="flex items-center justify-between">
     <h2 class="text-base font-bold tracking-tight">直近の新歓</h2>
-    <div class="text-xs text-slate-500 dark:text-slate-400">直近</div>
+    <div class="text-xs text-slate-500 dark:text-slate-400">直近 + 人気</div>
   </div>
 
   <div class="mt-3 grid gap-3">
@@ -47,10 +47,26 @@
             </div>
           </div>
 
-          <div class="mt-4 flex items-center justify-end">
-            <button type="button" class="px-3 py-2 rounded-xl bg-slate-100 dark:bg-input-dark border border-slate-200 dark:border-slate-700 text-xs font-bold hover:opacity-90" onclick="openPostModal({{ p.id }})">
-              詳細
-            </button>
+          <div class="mt-4 flex items-center justify-between">
+            <div class="flex items-center gap-3 text-[11px] text-slate-500 dark:text-slate-400">
+              <span class="inline-flex items-center gap-1">
+                <span class="material-symbols-outlined" style="font-size:16px;">favorite</span>
+                {{ p.favs_count|default:"0" }}
+              </span>
+              <span class="inline-flex items-center gap-1">
+                <span class="material-symbols-outlined" style="font-size:16px;">visibility</span>
+                {{ p.views_count|default:"0" }}
+              </span>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <button type="button" class="px-3 py-2 rounded-xl bg-slate-100 dark:bg-input-dark border border-slate-200 dark:border-slate-700 text-xs font-bold hover:opacity-90" onclick="openPostModal({{ p.id }})">
+                詳細
+              </button>
+              <button type="button" class="px-3 py-2 rounded-xl bg-primary text-background-dark text-xs font-bold hover:opacity-90" onclick="toggleFavorite({{ p.id }})">
+                保存
+              </button>
+            </div>
           </div>
         </div>
       </article>
