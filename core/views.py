@@ -103,7 +103,7 @@ def app(request):
             .annotate(favs_count=Count("favorites", distinct=True), views_count=Count("views", distinct=True))
             .order_by("-created_at")[:50]
         )
-
+##
         unread_notifs = Notification.objects.filter(user=request.user, is_read=False).count()
 
         # conversations list
