@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html class="dark" lang="ja"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0dccf2",
+                        "background-light": "#f5f8f8",
+                        "background-dark": "#101f22",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<title>プロフィール - Circle Room</title>
+<style>
+        body {
+            min-height: max(884px, 100dvh);
+        }.no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-white">
+<div class="relative flex h-auto min-h-screen w-full flex-col bg-background-light dark:bg-background-dark overflow-x-hidden pb-24">
+<div class="flex items-center bg-background-light dark:bg-background-dark p-4 pb-2 justify-between sticky top-0 z-10">
+<div class="text-slate-800 dark:text-white flex size-12 shrink-0 items-center">
+<span class="material-symbols-outlined text-2xl">settings</span>
+</div>
+<h2 class="text-slate-800 dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center">プロフィール</h2>
+<div class="flex w-12 items-center justify-end">
+<button class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 bg-transparent text-slate-800 dark:text-white gap-2 text-base font-bold leading-normal tracking-[0.015em] min-w-0 p-0">
+<span class="material-symbols-outlined text-2xl">share</span>
+</button>
+</div>
+</div>
+<div class="flex p-4 @container">
+<div class="flex w-full flex-col gap-4 items-center">
+<div class="flex gap-4 flex-col items-center">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full min-h-32 w-32 border-4 border-primary/20" data-alt="User profile picture showing a smiling student" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDX3BSChoEd6dFPNIPsZtRHsi6E5CRx_luZK-rElSQjOYjXHAC4-zoM9X_0ET483K49iok6MGa_tQjvijWLQR6dtnsOiTaYHDuGE63uj5qAetjt8kx78BTnCcFuYSHUnne2dZKC0a38hNm42YcesV785vIZ0s0qRY_5KS_5y5dPMxeA-Tmq-qRtDFEeC6kWqYl_oP4vnK2EZktpUe3QCRAk1GC5HazWdzNaFybgXW7_RkaBlpwlbcYYcMOMi3U_UKoJwknxEsRrrkk");'>
+</div>
+<div class="flex flex-col items-center justify-center">
+<div class="flex items-center gap-1">
+<p class="text-slate-900 dark:text-white text-[22px] font-bold leading-tight tracking-[-0.015em] text-center">山田 太郎</p>
+<span class="material-symbols-outlined text-primary text-xl" style="font-variation-settings: 'FILL' 1">verified</span>
+</div>
+<p class="text-slate-500 dark:text-[#90c1cb] text-base font-normal leading-normal text-center">〇〇大学 3年生</p>
+<p class="text-slate-500 dark:text-[#90c1cb] text-base font-normal leading-normal text-center">テニスクラブ 代表者</p>
+</div>
+</div>
+<div class="flex w-full max-w-[480px] gap-3">
+<button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-12 px-4 bg-slate-200 dark:bg-[#224249] text-slate-900 dark:text-white text-sm font-bold leading-normal tracking-[0.015em] flex-1">
+<span class="truncate">プロフィールを編集</span>
+</button>
+<button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-12 px-4 bg-primary text-[#102023] text-sm font-bold leading-normal tracking-[0.015em] flex-1">
+<span class="truncate">サークル管理</span>
+</button>
+</div>
+</div>
+</div>
+<div class="px-4">
+<p class="text-slate-700 dark:text-white text-base font-normal leading-relaxed pb-3 pt-1 text-center">
+                新歓サークル「テニスクラブ」の代表をしています。趣味はカフェ巡りとスポーツです！初心者大歓迎なので、興味がある方はぜひメッセージください。
+            </p>
+</div>
+<div class="flex flex-wrap gap-3 px-4 py-3">
+<div class="flex min-w-[100px] flex-1 basis-[fit-content] flex-col gap-1 rounded-xl border border-slate-200 dark:border-[#315f68] bg-white/50 dark:bg-transparent p-3 items-center text-center shadow-sm">
+<p class="text-slate-900 dark:text-white tracking-light text-2xl font-bold leading-tight">3</p>
+<div class="flex items-center gap-2"><p class="text-slate-500 dark:text-[#90c1cb] text-xs font-medium leading-normal">投稿済み</p></div>
+</div>
+<div class="flex min-w-[100px] flex-1 basis-[fit-content] flex-col gap-1 rounded-xl border border-slate-200 dark:border-[#315f68] bg-white/50 dark:bg-transparent p-3 items-center text-center shadow-sm">
+<p class="text-slate-900 dark:text-white tracking-light text-2xl font-bold leading-tight">12</p>
+<div class="flex items-center gap-2"><p class="text-slate-500 dark:text-[#90c1cb] text-xs font-medium leading-normal">お気に入り</p></div>
+</div>
+<div class="flex min-w-[100px] flex-1 basis-[fit-content] flex-col gap-1 rounded-xl border border-slate-200 dark:border-[#315f68] bg-white/50 dark:bg-transparent p-3 items-center text-center shadow-sm">
+<p class="text-slate-900 dark:text-white tracking-light text-2xl font-bold leading-tight">45</p>
+<div class="flex items-center gap-2"><p class="text-slate-500 dark:text-[#90c1cb] text-xs font-medium leading-normal">メッセージ</p></div>
+</div>
+</div>
+<div class="flex px-4 py-3">
+<div class="flex h-12 flex-1 items-center justify-center rounded-xl bg-slate-200 dark:bg-[#224249] p-1">
+<label class="flex cursor-pointer h-full grow items-center justify-center overflow-hidden rounded-lg px-2 has-[:checked]:bg-white dark:has-[:checked]:bg-background-dark has-[:checked]:shadow-sm has-[:checked]:text-primary text-slate-500 dark:text-[#90c1cb] text-sm font-bold leading-normal transition-all">
+<span class="truncate">過去の投稿</span>
+<input checked="" class="invisible w-0" name="tabs" type="radio" value="過去の投稿"/>
+</label>
+<label class="flex cursor-pointer h-full grow items-center justify-center overflow-hidden rounded-lg px-2 has-[:checked]:bg-white dark:has-[:checked]:bg-background-dark has-[:checked]:shadow-sm has-[:checked]:text-primary text-slate-500 dark:text-[#90c1cb] text-sm font-bold leading-normal transition-all">
+<span class="truncate">保存済み</span>
+<input class="invisible w-0" name="tabs" type="radio" value="保存済み"/>
+</label>
+</div>
+</div>
+<div class="px-4 flex flex-col gap-4 mt-2">
+<div class="flex gap-4 items-center bg-white dark:bg-[#1a2e32] p-3 rounded-xl shadow-sm border border-slate-100 dark:border-transparent">
+<div class="w-20 h-20 rounded-lg bg-cover bg-center shrink-0" data-alt="Tennis court" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuD299DAHIYECJg3MVZkx8MIe8qn4aZAjs_HXZsyD7B9_jK-mrmRUAHT3WjCYmxXTkBxgsobdjlzUPxHyvYj-zCALqwDxlZI7vbbsiuaV6RXFxRO1H7dOmrtjuSKq5eo1jYNKqKWPpyv85M4IQLXv6auHiqFqZ1kUq51VADmlnkl5RhrFT6gXzbBEKi_qoOEyayGUFx1Ics51OTLMOhuTFKZG7hyrcMj_ZrMYra7ZzsUCx39KDk5EBeTI020Pz-xBQlCQXjjBt5QzrY");'></div>
+<div class="flex flex-col gap-1 overflow-hidden">
+<p class="text-xs text-primary font-bold">募集中</p>
+<p class="text-slate-900 dark:text-white font-bold truncate">春の新歓テニス体験会！</p>
+<p class="text-slate-500 dark:text-[#90c1cb] text-xs">2024/04/15 投稿</p>
+</div>
+<div class="ml-auto">
+<span class="material-symbols-outlined text-slate-400">chevron_right</span>
+</div>
+</div>
+<div class="flex gap-4 items-center bg-white dark:bg-[#1a2e32] p-3 rounded-xl shadow-sm border border-slate-100 dark:border-transparent">
+<div class="w-20 h-20 rounded-lg bg-cover bg-center shrink-0" data-alt="Coffee meet" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuATEtUiH2-PnEVLq_ZGrTFAicOJOrsWvOjdFYoEjfaM9_k-LG175CWmU-vSzGPycBwWWejUB9O_7X5Rgxk5HNMroyi8KouU-dgSJdom99C8_F1NvXrK_Keu953RyJW6wRfe-K93dWC9JBuQXumNkE5PsAdKLeFS-4BwPhSCJjBqo2JWA0vESr1c-c4YSt_nifbrozVoNGrWYKe71IZe8x6tUN5jPKYzpIPiSanspe0nDtdCCcEovPCXEfqmzeiQ-5ylc83FpoMyrxw");'></div>
+<div class="flex flex-col gap-1 overflow-hidden">
+<p class="text-xs text-slate-400 font-bold">終了</p>
+<p class="text-slate-900 dark:text-white font-bold truncate">第1回 カフェ交流会 at 渋谷</p>
+<p class="text-slate-500 dark:text-[#90c1cb] text-xs">2024/03/20 投稿</p>
+</div>
+<div class="ml-auto">
+<span class="material-symbols-outlined text-slate-400">chevron_right</span>
+</div>
+</div>
+</div>
+<div class="mt-8 px-4 flex flex-col gap-1">
+<button class="flex items-center gap-3 w-full p-4 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 transition-colors">
+<span class="material-symbols-outlined text-slate-500 dark:text-[#90c1cb]">help</span>
+<span class="text-slate-900 dark:text-white flex-1 text-left">ヘルプとサポート</span>
+<span class="material-symbols-outlined text-slate-400 text-sm">open_in_new</span>
+</button>
+<button class="flex items-center gap-3 w-full p-4 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors group">
+<span class="material-symbols-outlined text-red-500">logout</span>
+<span class="text-red-500 flex-1 text-left font-semibold">ログアウト</span>
+</button>
+</div>
+<div class="fixed bottom-0 left-0 right-0 bg-white/80 dark:bg-background-dark/80 backdrop-blur-lg border-t border-slate-200 dark:border-slate-800 px-2 py-3 flex justify-around items-center z-50">
+<div class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500 flex-1">
+<span class="material-symbols-outlined">home</span>
+<span class="text-[10px]">ホーム</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500 flex-1">
+<span class="material-symbols-outlined">search</span>
+<span class="text-[10px]">検索</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500 flex-1">
+<span class="material-symbols-outlined">add_box</span>
+<span class="text-[10px]">投稿作成</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500 flex-1">
+<span class="material-symbols-outlined">chat_bubble</span>
+<span class="text-[10px]">メッセージ</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-primary flex-1">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">person</span>
+<span class="text-[10px] font-bold">プロフィール</span>
+</div>
+</div>
+</div>
+
+</body></html>

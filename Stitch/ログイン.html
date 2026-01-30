@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="ja"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0dccf2",
+                        "background-light": "#f5f8f8",
+                        "background-dark": "#101f22",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<title>Circle Room - ログイン</title>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display antialiased">
+<div class="relative flex h-screen w-full flex-col overflow-x-hidden">
+<!-- Header / Logo Area -->
+<div class="flex flex-col items-center justify-center pt-20 pb-10 px-4">
+<!-- App Icon Placeholder -->
+<div class="mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-primary shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-background-dark text-5xl">groups</span>
+</div>
+<h1 class="text-gray-900 dark:text-white tracking-tight text-[32px] font-bold leading-tight text-center">
+                Circle Room
+            </h1>
+<p class="mt-2 text-gray-500 dark:text-[#90c1cb] text-sm font-medium">大学生活を、もっと楽しく。</p>
+</div>
+<!-- Login Form Section -->
+<div class="flex flex-col w-full max-w-[480px] mx-auto px-6">
+<!-- Username/Email Field -->
+<div class="flex flex-col gap-1.5 py-3">
+<label class="flex flex-col w-full">
+<p class="text-gray-700 dark:text-white text-sm font-semibold leading-normal pb-2 px-1">ユーザーネーム / メールアドレス</p>
+<input class="form-input flex w-full rounded-xl text-gray-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-gray-300 dark:border-[#315f68] bg-white dark:bg-[#182f34] focus:border-primary h-14 placeholder:text-gray-400 dark:placeholder:text-[#90c1cb]/50 px-4 text-base font-normal transition-all" placeholder="example@university.ac.jp" type="email" value=""/>
+</label>
+</div>
+<!-- Password Field -->
+<div class="flex flex-col gap-1.5 py-3">
+<label class="flex flex-col w-full">
+<div class="flex justify-between items-center pb-2 px-1">
+<p class="text-gray-700 dark:text-white text-sm font-semibold leading-normal">パスワード</p>
+<a class="text-primary text-xs font-medium hover:underline" href="#">パスワードを忘れた場合</a>
+</div>
+<div class="relative flex w-full items-stretch">
+<input class="form-input flex w-full rounded-xl text-gray-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-gray-300 dark:border-[#315f68] bg-white dark:bg-[#182f34] focus:border-primary h-14 placeholder:text-gray-400 dark:placeholder:text-[#90c1cb]/50 px-4 pr-12 text-base font-normal transition-all" placeholder="••••••••" type="password" value=""/>
+<button class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-[#90c1cb] flex items-center justify-center" type="button">
+<span class="material-symbols-outlined text-[22px]">visibility</span>
+</button>
+</div>
+</label>
+</div>
+<!-- Login Button -->
+<div class="pt-6 pb-4">
+<button class="flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-xl h-14 px-5 bg-primary text-background-dark text-base font-bold leading-normal tracking-wide shadow-lg shadow-primary/10 active:scale-[0.98] transition-transform">
+<span class="truncate">ログイン</span>
+</button>
+</div>
+<!-- Divider (Optional but clean) -->
+<div class="flex items-center py-4">
+<div class="flex-grow border-t border-gray-200 dark:border-gray-800"></div>
+<span class="px-3 text-xs text-gray-400 dark:text-[#90c1cb]/50 uppercase tracking-widest">or</span>
+<div class="flex-grow border-t border-gray-200 dark:border-gray-800"></div>
+</div>
+<!-- Signup Meta Text -->
+<div class="flex flex-col items-center gap-2 pt-2">
+<p class="text-gray-500 dark:text-[#90c1cb] text-sm font-normal">アカウントをお持ちでないですか？</p>
+<button class="text-primary text-base font-bold hover:underline py-1">
+                    新規アカウント作成
+                </button>
+</div>
+</div>
+<!-- Background Decoration (Subtle iOS-style glass/blur effects) -->
+<div class="fixed -bottom-24 -left-24 h-64 w-64 rounded-full bg-primary/10 blur-[100px] pointer-events-none"></div>
+<div class="fixed -top-24 -right-24 h-64 w-64 rounded-full bg-primary/5 blur-[80px] pointer-events-none"></div>
+<!-- Footer / Safety Area spacing for iOS -->
+<div class="h-10"></div>
+</div>
+</body></html>

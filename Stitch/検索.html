@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html class="dark" lang="ja"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>検索（サークル一覧） - Circle Room</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Noto+Sans+JP:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0dccf2",
+                        "primary-dark": "#0ab8da",
+                        "background-light": "#f5f8f8",
+                        "background-dark": "#101f22",
+                        "surface-dark": "#182f34",
+                        "text-secondary": "#90c1cb",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "Noto Sans JP", "sans-serif"],
+                        "body": ["Noto Sans JP", "sans-serif"],
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Plus Jakarta Sans', 'Noto Sans JP', sans-serif;
+            min-height: max(884px, 100dvh);
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .pb-safe {
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white antialiased selection:bg-primary selection:text-background-dark">
+<div class="relative flex h-full min-h-screen w-full flex-col overflow-hidden max-w-md mx-auto shadow-2xl">
+<header class="sticky top-0 z-50 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md border-b border-gray-200 dark:border-white/5">
+<div class="flex items-center p-4 pb-2 justify-between">
+<button aria-label="Go back" class="flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined text-slate-900 dark:text-white text-2xl">arrow_back</span>
+</button>
+<h1 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-tight flex-1 text-center pr-10">サークル一覧</h1>
+</div>
+<div class="px-4 pb-4 pt-1">
+<label class="group flex flex-col w-full">
+<div class="flex w-full items-center rounded-xl bg-white dark:bg-surface-dark border border-gray-200 dark:border-transparent transition-all focus-within:ring-2 focus-within:ring-primary focus-within:border-primary overflow-hidden h-12 shadow-sm">
+<div class="flex items-center justify-center pl-4 pr-2 text-slate-400 dark:text-text-secondary">
+<span class="material-symbols-outlined">search</span>
+</div>
+<input class="flex w-full bg-transparent border-none focus:ring-0 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-text-secondary text-base font-medium h-full py-0 pl-0 pr-4" placeholder="サークル名や活動内容で検索..." type="text" value=""/>
+</div>
+</label>
+<div class="flex gap-2 mt-3 overflow-x-auto no-scrollbar pb-1">
+<button class="whitespace-nowrap px-4 py-1.5 rounded-full bg-primary text-background-dark text-sm font-bold shadow-sm shadow-primary/20">全て</button>
+<button class="whitespace-nowrap px-4 py-1.5 rounded-full bg-white dark:bg-surface-dark border border-gray-200 dark:border-white/5 text-slate-600 dark:text-gray-300 text-sm font-medium">運動系</button>
+<button class="whitespace-nowrap px-4 py-1.5 rounded-full bg-white dark:bg-surface-dark border border-gray-200 dark:border-white/5 text-slate-600 dark:text-gray-300 text-sm font-medium">文化系</button>
+<button class="whitespace-nowrap px-4 py-1.5 rounded-full bg-white dark:bg-surface-dark border border-gray-200 dark:border-white/5 text-slate-600 dark:text-gray-300 text-sm font-medium">音楽</button>
+<button class="whitespace-nowrap px-4 py-1.5 rounded-full bg-white dark:bg-surface-dark border border-gray-200 dark:border-white/5 text-slate-600 dark:text-gray-300 text-sm font-medium">ボランティア</button>
+</div>
+</div>
+</header>
+<main class="flex-1 overflow-y-auto px-4 py-2 pb-24 space-y-4">
+<article class="flex flex-col rounded-2xl bg-white dark:bg-surface-dark shadow-sm border border-gray-100 dark:border-white/5 overflow-hidden group">
+<div class="relative w-full aspect-[16/9] overflow-hidden">
+<div class="w-full h-full bg-cover bg-center transition-transform duration-500 group-hover:scale-105" data-alt="Light Music Club" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCXFm66_IdfrdmF2J3Gg9ffP62_tCPbyXSngnl7wUVXna7qJew_MIEMu_aglYGnvjtupMkEVKW6NCoDL56RoegwaumsfTPXu7nIY4tiBHp_jlP7C2SoMQIVar8ELk5ct2xHRmZ9oo8nQQnh8vkAltxlzZcgzlbem3x-ArAudawyRvcdiwNiQAVyuKVUv36SSTQEUYvBGlHhICJTinT8LpNZ6N6veEHh84KzLfxEdLpGa8B36SVb7_NCCf3oLBvfCSt17sySftwbfYU");'></div>
+<div class="absolute top-3 left-3">
+<span class="inline-flex items-center rounded-md bg-black/60 backdrop-blur-sm px-2 py-1 text-xs font-medium text-white ring-1 ring-inset ring-white/20">音楽</span>
+</div>
+<button class="absolute top-3 right-3 p-2 rounded-full bg-black/40 backdrop-blur-sm text-white hover:bg-primary hover:text-background-dark transition-colors">
+<span class="material-symbols-outlined text-[20px] leading-none">favorite</span>
+</button>
+</div>
+<div class="flex flex-col p-4 gap-3">
+<div>
+<h3 class="text-slate-900 dark:text-white text-lg font-bold leading-tight mb-1">軽音学部 (Light Music Club)</h3>
+<p class="text-slate-500 dark:text-text-secondary text-sm leading-relaxed line-clamp-2">初心者大歓迎！週2回ライブハウスで活動しています。バンドを組んで学園祭を盛り上げよう！</p>
+</div>
+<div class="flex items-center gap-4 text-xs text-slate-400 dark:text-gray-500 mt-auto">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">groups</span>
+<span>54名</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+<span>月・木 18:00~</span>
+</div>
+</div>
+<button class="mt-1 w-full flex items-center justify-center rounded-xl bg-primary hover:bg-primary-dark text-background-dark text-sm font-bold py-3 transition-colors active:scale-[0.98]">詳細を見る</button>
+</div>
+</article>
+<article class="flex flex-col rounded-2xl bg-white dark:bg-surface-dark shadow-sm border border-gray-100 dark:border-white/5 overflow-hidden group">
+<div class="relative w-full aspect-[16/9] overflow-hidden">
+<div class="w-full h-full bg-cover bg-center transition-transform duration-500 group-hover:scale-105" data-alt="Tennis Circle ACE" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAnukC_NIilSz7P-vR4Wz9AHXK_IUn4eGSk_BTXnK6cMsbsiKEmeF5kMqOHBTu8fIZaN1JZzHDXsFqU6dJFChiRcjWcUaWoq9TbQGRtNq4UyRQKLs7oV7RJ_XYZdl7RDfWn3k0hv63SxnFTV_i7TLDl-wqFaLiUsmNQ9_JGZCfJk0mrwd56lquz3sosF5OkxCA7rt7Oz9Ro5u5RUYoAiMmCq5drB5W79QBTBGA0qgzReiEflXPxDK3gpSg8gx1sT84dDuBR1Asr9aw");'></div>
+<div class="absolute top-3 left-3">
+<span class="inline-flex items-center rounded-md bg-black/60 backdrop-blur-sm px-2 py-1 text-xs font-medium text-white ring-1 ring-inset ring-white/20">スポーツ</span>
+</div>
+<button class="absolute top-3 right-3 p-2 rounded-full bg-black/40 backdrop-blur-sm text-white hover:bg-primary hover:text-background-dark transition-colors">
+<span class="material-symbols-outlined text-[20px] leading-none">favorite</span>
+</button>
+</div>
+<div class="flex flex-col p-4 gap-3">
+<div>
+<h3 class="text-slate-900 dark:text-white text-lg font-bold leading-tight mb-1">テニスサークル ACE</h3>
+<p class="text-slate-500 dark:text-text-secondary text-sm leading-relaxed line-clamp-2">まったりテニスを楽しみたい人向け。経験者はもちろん、ラケットを握ったことのない初心者も多数！</p>
+</div>
+<div class="flex items-center gap-4 text-xs text-slate-400 dark:text-gray-500 mt-auto">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">groups</span>
+<span>82名</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+<span>水・土 13:00~</span>
+</div>
+</div>
+<button class="mt-1 w-full flex items-center justify-center rounded-xl bg-primary hover:bg-primary-dark text-background-dark text-sm font-bold py-3 transition-colors active:scale-[0.98]">詳細を見る</button>
+</div>
+</article>
+</main>
+<nav class="fixed bottom-0 z-50 w-full max-w-md bg-white/90 dark:bg-background-dark/90 backdrop-blur-lg border-t border-gray-200 dark:border-white/5 pb-safe">
+<div class="grid h-16 grid-cols-5 items-center">
+<a class="group inline-flex flex-col items-center justify-center px-1 hover:bg-gray-50 dark:hover:bg-white/5 h-full" href="#">
+<span class="material-symbols-outlined mb-1 text-slate-400 dark:text-gray-500 group-hover:text-primary transition-colors">home</span>
+<span class="text-[9px] font-medium text-slate-400 dark:text-gray-500 group-hover:text-primary transition-colors">ホーム</span>
+</a>
+<a class="group inline-flex flex-col items-center justify-center px-1 h-full relative" href="#">
+<div class="absolute top-0 w-8 h-1 bg-primary rounded-b-full shadow-[0_0_10px_rgba(13,204,242,0.7)]"></div>
+<span class="material-symbols-outlined mb-1 text-primary">search</span>
+<span class="text-[9px] font-bold text-primary">検索</span>
+</a>
+<a class="group inline-flex flex-col items-center justify-center px-1 hover:bg-gray-50 dark:hover:bg-white/5 h-full" href="#">
+<span class="material-symbols-outlined mb-1 text-slate-400 dark:text-gray-500 group-hover:text-primary transition-colors">forum</span>
+<span class="text-[9px] font-medium text-slate-400 dark:text-gray-500 group-hover:text-primary transition-colors">メッセージ</span>
+</a>
+<a class="group inline-flex flex-col items-center justify-center px-1 hover:bg-gray-50 dark:hover:bg-white/5 h-full" href="#">
+<span class="material-symbols-outlined mb-1 text-slate-400 dark:text-gray-500 group-hover:text-primary transition-colors">add_circle</span>
+<span class="text-[9px] font-medium text-slate-400 dark:text-gray-500 group-hover:text-primary transition-colors">投稿作成</span>
+</a>
+<a class="group inline-flex flex-col items-center justify-center px-1 hover:bg-gray-50 dark:hover:bg-white/5 h-full" href="#">
+<span class="material-symbols-outlined mb-1 text-slate-400 dark:text-gray-500 group-hover:text-primary transition-colors">account_circle</span>
+<span class="text-[9px] font-medium text-slate-400 dark:text-gray-500 group-hover:text-primary transition-colors">プロフィール</span>
+</a>
+</div>
+</nav>
+</div>
+
+</body></html>
