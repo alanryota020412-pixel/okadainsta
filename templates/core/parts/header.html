@@ -1,4 +1,5 @@
-<header class="flex items-center justify-between px-4 py-3 bg-background-light/90 dark:bg-background-dark/90 backdrop-blur-md sticky top-0 z-50 border-b border-slate-200 dark:border-slate-800">
+<header
+  class="flex items-center justify-between px-4 py-3 bg-background-light/90 dark:bg-background-dark/90 backdrop-blur-md sticky top-0 z-50 border-b border-slate-200 dark:border-slate-800">
   <div class="flex items-center gap-2">
     <div class="size-9 rounded-xl bg-primary/15 text-primary flex items-center justify-center">
       <span class="material-symbols-outlined" style="font-size:20px;">diversity_3</span>
@@ -10,15 +11,24 @@
   </div>
 
   <div class="flex items-center gap-2">
-    <button id="notifBtn" type="button" class="relative flex items-center justify-center p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors">
+    <button id="notifBtn" type="button"
+      class="relative flex items-center justify-center p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors">
       <span class="material-symbols-outlined" style="font-size:24px;">notifications</span>
-      <span id="notifBadge" class="hidden absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-primary text-background-dark text-[11px] font-bold items-center justify-center"></span>
+      <span id="notifBadge"
+        class="hidden absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-primary text-background-dark text-[11px] font-bold items-center justify-center"></span>
     </button>
 
-    <!-- ログイン機能は一旦なし -->
-    <button type="button" class="flex items-center justify-center p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
-      onclick="alert('ログイン機能は一旦オフです');">
+    {% if user.is_authenticated %}
+    <button type="button"
+      class="flex items-center justify-center p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
+      onclick="switchTab('profile')">
       <span class="material-symbols-outlined" style="font-size:24px;">person</span>
     </button>
+    {% else %}
+    <a href="{% url 'login' %}"
+      class="flex items-center justify-center p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors">
+      <span class="material-symbols-outlined" style="font-size:24px;">login</span>
+    </a>
+    {% endif %}
   </div>
 </header>

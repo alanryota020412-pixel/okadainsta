@@ -29,4 +29,7 @@ urlpatterns = [
     # ===== Notifications =====
     path("notifications/json/", views.notifications_json, name="notifications_json"),
     path("notifications/mark-read/", views.notifications_mark_read, name="notifications_mark_read"),
+
+    # ===== Auth =====
+    path("signup/", views.signup, name="signup"),
 ]
