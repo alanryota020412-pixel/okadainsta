@@ -5,6 +5,7 @@ from django.urls import path, include
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("accounts/", include("django.contrib.auth.urls")),
 
     # namespace を確実に登録
     path("", include(("core.urls", "core"), namespace="core")),
