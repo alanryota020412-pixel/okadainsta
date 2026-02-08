@@ -1,8 +1,8 @@
-<section id="tab-home" class="tab-section px-4 py-4">
-  {% comment %} <div class="flex items-center justify-between">
-    <h2 class="text-base font-bold tracking-tight">直近の新歓</h2>
-    <div class="text-xs text-slate-500 dark:text-slate-400">直近 + 人気</div> 
-  </div> {% endcomment %}
+<section id="tab-home" class="tab-section px-4 py-4 pb-28">
+  <div class="flex flex-col items-stretch justify-start gap-4">
+    {% comment %} <h2 class="text-base font-bold tracking-tight">直近の新歓</h2>
+    <div class="text-xs text-slate-500 dark:text-slate-400">直近 + 人気</div>  {% endcomment %}
+  </div>
 
   <div class="mt-3 grid gap-3">
     {% for p in posts %}
@@ -106,22 +106,21 @@
           onclick="event.stopPropagation()"
         >
       </div>
-      <script>
-        // DOMが出来た後に取る（ここが超重要）
-        const imageModal = document.getElementById("imageModal");
-        const imageModalImg = document.getElementById("imageModalImg");
+        <script>
+          // DOMが出来た後に取る（ここが超重要）
+          const imageModal = document.getElementById("imageModal");
+          const imageModalImg = document.getElementById("imageModalImg");
 
-        // onclick="openImageModal(...)" から呼べるように window に生やす
-        window.openImageModal = function (src) {
-          imageModalImg.src = src;
-          imageModal.classList.remove("hidden");
-        };
+          // onclick="openImageModal(...)" から呼べるように window に生やす
+          window.openImageModal = function (src) {
+            imageModalImg.src = src;
+            imageModal.classList.remove("hidden");
+          };
 
-        window.closeImageModal = function () {
-          imageModal.classList.add("hidden");
-          imageModalImg.src = "";
-        };
-      </script>
+          window.closeImageModal = function () {
+            imageModal.classList.add("hidden");
+            imageModalImg.src = "";
+          };
+        </script>
       </div>
-  </div>
 </section>
