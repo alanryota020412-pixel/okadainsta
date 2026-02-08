@@ -1,14 +1,28 @@
 <section id="tab-home" class="tab-section px-4 py-4">
-  <div class="flex items-center justify-between">
+  {% comment %} <div class="flex items-center justify-between">
     <h2 class="text-base font-bold tracking-tight">直近の新歓</h2>
-    <div class="text-xs text-slate-500 dark:text-slate-400">直近 + 人気</div>
-  </div>
+    <div class="text-xs text-slate-500 dark:text-slate-400">直近 + 人気</div> 
+  </div> {% endcomment %}
 
   <div class="mt-3 grid gap-3">
     {% for p in posts %}
-      <article class="rounded-2xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-800 overflow-hidden">
+    <!--サークル名-->
+      <article class="relative rounded-2xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-800 overflow-hidden">
+        <div class="absolute top-2 left-0 w-full flex px-4 h-30 bg-white/90 dark:bg-surface-dark/90 backdrop-blur text-2xl font-bold">
+          <span class="inline-flex items-center gap-3">
+            <span class="material-symbols-outlined" style="text-2xl font-bold">group</span>
+            <!--たぶんサークル名を自動設定する機能がない-->
+            {{ p.circle_name}}
+          </span>
+          {% if p.effective_status == "closed" %}
+            <span class="shrink-0 inline-flex items-center px-1.5 py-0.1 rounded-full text-[11px] font-bold bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 ml-auto">終了</span>
+          {% else %}
+            <span class="shrink-0 inline-flex items-center px-1.5 py-0.1 rounded-full text-[11px] font-bold bg-primary/15 text-primary ml-auto">募集中</span>
+          {% endif %}
+        </div>
+        <!--画像-->
         {% if p.image %}
-          <button type="button" class="w-full block" onclick="openPostModal({{ p.id }})">
+          <button type="button" class="w-full block pt-12" onclick="openImageModal('{{ p.image.url }}')">
             <div class="relative w-full aspect-[4/5]">
               <img
                 class="absolute inset-0 w-full h-full object-cover"
@@ -18,75 +32,96 @@
             </div>
           </button>
         {% else %}
-          <button type="button"
-                  class="w-full block"
-                  onclick="openPostModal({{ p.id }})">
-            <div class="w-full aspect-[4/5] bg-slate-100 dark:bg-slate-800
-                        flex items-center justify-center">
-              <span class="text-slate-400 text-sm">
-                画像なし（タップで詳細）
-              </span>
-            </div>
-          </button>
+          <div class="pt-12"></div>
         {% endif %}
-
-        <div class="p-4">
-          <div class="flex items-start justify-between gap-2">
-            <div>
-              <div class="text-sm font-bold leading-snug">{{ p.title }}</div>
-              <div class="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                <span class="inline-flex items-center gap-1">
-                  <span class="material-symbols-outlined" style="font-size:16px;">group</span>
-                  {{ p.circle_name|default:"（サークル名未設定）" }}
-                </span>
-              </div>
-            </div>
-
-            {% if p.effective_status == "closed" %}
-              <span class="shrink-0 inline-flex items-center px-2 py-1 rounded-full text-[11px] font-bold bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300">終了</span>
-            {% else %}
-              <span class="shrink-0 inline-flex items-center px-2 py-1 rounded-full text-[11px] font-bold bg-primary/15 text-primary">募集中</span>
-            {% endif %}
-          </div>
-
-          <div class="mt-3 grid gap-2 text-xs text-slate-600 dark:text-slate-300">
-            <div class="flex items-center gap-2">
-              <span class="material-symbols-outlined text-primary" style="font-size:18px;">calendar_month</span>
-              <span>{{ p.event_at|date:"Y/m/d H:i" }}</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <span class="material-symbols-outlined text-slate-400" style="font-size:18px;">pin_drop</span>
-              <span class="line-clamp-1">{{ p.place|default:"（場所未設定）" }}</span>
-            </div>
-          </div>
-
-          <div class="mt-4 flex items-center justify-between">
-            <div class="flex items-center gap-3 text-[11px] text-slate-500 dark:text-slate-400">
-              <span class="inline-flex items-center gap-1">
-                <span class="material-symbols-outlined" style="font-size:16px;">favorite</span>
-                {{ p.favs_count|default:"0" }}
-              </span>
-              <span class="inline-flex items-center gap-1">
-                <span class="material-symbols-outlined" style="font-size:16px;">visibility</span>
-                {{ p.views_count|default:"0" }}
-              </span>
-            </div>
-
-            <div class="flex items-center gap-2">
-              <button type="button" class="px-3 py-2 rounded-xl bg-slate-100 dark:bg-input-dark border border-slate-200 dark:border-slate-700 text-xs font-bold hover:opacity-90" onclick="openPostModal({{ p.id }})">
-                詳細
-              </button>
-              <button type="button" class="px-3 py-2 rounded-xl bg-primary text-background-dark text-xs font-bold hover:opacity-90" onclick="toggleFavorite({{ p.id }})">
-                保存
-              </button>
-            </div>
+      <!--画像下部-->
+      <div class="px-4 pb-4 pt-2">
+        <div class="mt-0 flex items-center justify-between">
+          <div class="flex items-center gap-3 text-[11px] text-slate-500 dark:text-slate-400">
+            <span class="inline-flex items-center gap-1">
+              <span class="material-symbols-outlined" style="font-size:24px;">favorite</span>
+              {{ p.favs_count|default:"0" }}
+            </span>
+            <span class="inline-flex items-center gap-1">
+              <span class="material-symbols-outlined" style="font-size:24px;">visibility</span>
+              {{ p.views_count|default:"0" }}
+            </span>              
+            <span class="inline-flex items-center gap-1">
+              <span class="material-symbols-outlined" style="font-size:24px;">check</span>
+              {{ p.checks_count|default:"0" }}
+            </span>
+            <span class="material-symbols-outlined text-slate-400" style="font-size:24px;">pin_drop</span>
+            <span class="line-clamp-1">{{ p.place|default:"（場所未設定）" }}</span>
           </div>
         </div>
+        <div class="flex items-start justify-between gap-2">
+          <div class="mt-1 text-2xl font-bold leading-snug">
+            {{ p.title }}
+          </div>
+        </div>
+        <div class="mt-1 grid gap-2 text-xs text-slate-600 dark:text-slate-300">
+          <div class="flex items-center gap-2">
+            <span>{{ p.event_at|date:"Y/m/d H:i" }}</span>
+          </div>
+        </div>
+        <div class="mt-1 grid gap-2 text-xs text-slate-600 dark:text-slate-300">
+          <!-- 詳細 -->
+          {% if p.detail %}
+            <p class="flex flex-wrap items-center gap-2">
+              <span>{{ p.detail }}</span>
+              <span
+                class="text-primary cursor-pointer underline whitespace-nowrap"
+                onclick="openPostModal({{ p.id }})"
+              >
+                詳細はこちら
+              </span>
+            </p>
+          {% else %}
+                            <span
+                class="text-primary cursor-pointer underline whitespace-nowrap"
+                onclick="openPostModal({{ p.id }})"
+              >
+                詳細はこちら
+              </span>
+          {% endif %}
+        </div>
+      </div>
       </article>
     {% empty %}
       <div class="rounded-2xl border border-slate-200 dark:border-slate-800 p-6 text-center text-slate-500 dark:text-slate-400 bg-white dark:bg-surface-dark">
         まだ投稿がありません。
       </div>
     {% endfor %}
+    <!-- 画像全画面モーダル（forの外に1個だけ） -->
+      <div
+        id="imageModal"
+        class="fixed inset-0 z-[80] hidden bg-black/80 flex items-center justify-center"
+        onclick="closeImageModal()"
+      >
+        <img
+          id="imageModalImg"
+          class="max-w-full max-h-full object-contain"
+          src=""
+          alt="full image"
+          onclick="event.stopPropagation()"
+        >
+      </div>
+      <script>
+        // DOMが出来た後に取る（ここが超重要）
+        const imageModal = document.getElementById("imageModal");
+        const imageModalImg = document.getElementById("imageModalImg");
+
+        // onclick="openImageModal(...)" から呼べるように window に生やす
+        window.openImageModal = function (src) {
+          imageModalImg.src = src;
+          imageModal.classList.remove("hidden");
+        };
+
+        window.closeImageModal = function () {
+          imageModal.classList.add("hidden");
+          imageModalImg.src = "";
+        };
+      </script>
+      </div>
   </div>
 </section>
