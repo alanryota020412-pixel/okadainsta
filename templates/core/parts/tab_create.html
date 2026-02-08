@@ -7,22 +7,40 @@
     <div class="w-10"></div>
   </div>
 
-  <!-- ✅ formは1個だけ -->
-  <form class="px-4 pb-24"
+  <form class="px-4 pb-6"
         method="post"
         action="{% url 'core:post_create' %}"
         enctype="multipart/form-data">
     {% csrf_token %}
 
-    <!-- 画像アップロード（UI） -->
-    <label class="mt-3 block rounded-2xl border-2 border-dashed border-primary/40 bg-surface-dark/20 p-6 text-center cursor-pointer">
-      <div class="mx-auto size-14 rounded-full bg-primary/15 text-primary flex items-center justify-center">
-        <span class="material-symbols-outlined" style="font-size:26px;">add_photo_alternate</span>
+  <!-- 画像アップロード-->
+    <label id="uploadBox"
+      class="mt-3 block cursor-pointer rounded-2xl border-2 border-dashed border-primary/40
+            bg-surface-dark/20 p-0 overflow-hidden relative">
+
+      <!-- 枠の“中身”の高さを決める（好きな高さに） -->
+      <div class="h-56 relative">
+
+        <!-- ✅ プレビュー：枠いっぱいに重ねる -->
+        <img id="imagePreview"
+            class="hidden absolute inset-0 w-full h-full object-cover"
+            alt="preview" />
+
+        <!-- ✅ 案内UI：画像が無いときだけ見せる -->
+        <div id="uploadPrompt"
+            class="absolute inset-0 flex flex-col items-center justify-center text-center p-6">
+          <div class="mx-auto size-14 rounded-full bg-primary/15 text-primary flex items-center justify-center">
+            <span class="material-symbols-outlined" style="font-size:26px;">add_photo_alternate</span>
+          </div>
+          <div class="mt-3 text-base font-bold">イベント画像</div>
+          <div class="mt-1 text-xs text-slate-500 dark:text-slate-400">
+            タップして画像をアップロード（Max 5MB）
+          </div>
+        </div>
+
       </div>
-      <div class="mt-3 text-base font-bold">イベント画像</div>
-      <div class="mt-1 text-xs text-slate-500 dark:text-slate-400">タップして画像をアップロード（Max 5MB）</div>
-      <!-- ✅ nameはフォーム定義と一致させる（たぶん image でOK） -->
-      <input name="image" type="file" accept="image/*" class="hidden">
+
+      <input id="imageInput" name="image" type="file" accept="image/*" class="hidden">
     </label>
 
     <div class="mt-5 grid gap-4">

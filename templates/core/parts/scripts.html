@@ -78,5 +78,37 @@
   function toggleFavorite(postId) {
     alert("保存（favorite）はまだ未実装です: " + postId);
   }
+
+  // --- 画像アップロード：選択したらプレビュー表示 ---
+  (function () {
+    const input = document.getElementById("imageInput");
+    const preview = document.getElementById("imagePreview");
+    if (!input || !preview) return; // createタブ以外なら何もしない
+
+    input.addEventListener("change", () => {
+      const file = input.files && input.files[0];
+      if (!file) {
+        preview.src = "";
+        preview.classList.add("hidden");
+        return;
+      }
+
+      // 5MBチェック（UIの文言と合わせる）
+      const maxBytes = 5 * 1024 * 1024;
+      if (file.size > maxBytes) {
+        alert("画像が大きすぎます（最大5MB）");
+        input.value = "";
+        preview.src = "";
+        preview.classList.add("hidden");
+        return;
+      }
+
+      const url = URL.createObjectURL(file);
+      preview.src = url;
+      preview.classList.remove("hidden");
+    });
+  })();
+
+  
   function openConversation(id) { alert("会話: " + id); }
 </script>
