@@ -9,11 +9,24 @@
       <article class="rounded-2xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-800 overflow-hidden">
         {% if p.image %}
           <button type="button" class="w-full block" onclick="openPostModal({{ p.id }})">
-            <img class="w-full h-44 object-cover" src="{{ p.image.url }}" alt="post image">
+            <div class="relative w-full aspect-[4/5]">
+              <img
+                class="absolute inset-0 w-full h-full object-cover"
+                src="{{ p.image.url }}"
+                alt="post image"
+              >
+            </div>
           </button>
         {% else %}
-          <button type="button" class="w-full h-32 bg-slate-100 dark:bg-slate-800 flex items-center justify-center" onclick="openPostModal({{ p.id }})">
-            <span class="text-slate-400 text-sm">画像なし（タップで詳細）</span>
+          <button type="button"
+                  class="w-full block"
+                  onclick="openPostModal({{ p.id }})">
+            <div class="w-full aspect-[4/5] bg-slate-100 dark:bg-slate-800
+                        flex items-center justify-center">
+              <span class="text-slate-400 text-sm">
+                画像なし（タップで詳細）
+              </span>
+            </div>
           </button>
         {% endif %}
 
