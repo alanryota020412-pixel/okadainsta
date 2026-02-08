@@ -36,9 +36,40 @@
   const postModalBody = document.getElementById("postModalBody");
 
   function openPostModal(postId) {
-    postModalBody.textContent = "投稿ID: " + postId + "（ここは後で詳細表示を実装）";
+    postModalBody.textContent = "読み込み中...";
     postModal.classList.remove("hidden");
+
+    fetch(`/posts/${postId}/json/`)
+      .then(r => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.json();
+      })
+      .then(data => {
+        // まずはpostModalBodyだけで完結（title/detail要素分けは後でOK）
+        postModalBody.innerHTML = `
+          <div class="text-sm font-bold">${escapeHtml(data.title ?? "")}</div>
+          <div class="mt-1 text-xs text-slate-500">${escapeHtml(data.circle_name ?? "")}</div>
+          <div class="mt-3 text-sm whitespace-pre-wrap">${escapeHtml(data.detail ?? "")}</div>
+          <div class="mt-3 text-xs text-slate-500">日時: ${escapeHtml(data.event_at ?? "")}</div>
+          <div class="mt-1 text-xs text-slate-500">場所: ${escapeHtml(data.place ?? "")}</div>
+        `;
+      })
+      .catch(err => {
+        console.error("openPostModal failed:", err);
+        postModalBody.textContent = "詳細取得に失敗しました: " + err;
+      });
   }
+
+  // innerHTML使うので最低限のエスケープ
+  function escapeHtml(s) {
+    return String(s)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#39;");
+  }
+
   function closePostModal() {
     postModal.classList.add("hidden");
     postModalBody.textContent = "";
