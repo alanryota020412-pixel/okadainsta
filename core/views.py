@@ -185,79 +185,41 @@ def post_detail_json(request, pk):
 # -------------------------
 # Post: create/edit/delete
 # -------------------------
+from django.utils.dateparse import parse_datetime
+from django.utils import timezone
+from django.views.decorators.csrf import csrf_exempt
+
 @login_required
+@csrf_exempt # login実装後に外す
 def post_create(request):
     if request.method == "POST":
-        form = PostCreateForm(request.POST, request.FILES)
-        if form.is_valid():
-            p = form.save(commit=False)
-            p.author = request.user
+        # 必須チェックは自前（HTML required + サーバ側も）
+        title = request.POST.get("title", "").strip()
+        event_at_raw = request.POST.get("event_at", "").strip()
 
-            # サークル名が空なら Circle.name を入れる
-            if not p.circle_name:
-                circle = getattr(request.user, "circle", None)
-                if circle and circle.name:
-                    p.circle_name = circle.name
+        if not title or not event_at_raw:
+            return render(request, "core/app.html", {"initial_tab":"create", "errors":["title/event_at required"]})
 
-            p.save()
+        # datetime-local は "YYYY-MM-DDTHH:MM"
+        dt = parse_datetime(event_at_raw)
+        if dt is None:
+            # parse_datetimeが通らない環境なら手動変換
+            dt = timezone.datetime.fromisoformat(event_at_raw)
 
-            # tags
-            tag_names = form.cleaned_data.get("tags", [])
-            tag_objs = []
-            for name in tag_names:
-                t, _ = Tag.objects.get_or_create(name=name)
-                tag_objs.append(t)
-            if tag_objs:
-                p.tags.set(tag_objs)
+        p = Post(
+            author=request.user,
+            title=title,
+            circle_name=request.POST.get("circle_name","").strip(),
+            place=request.POST.get("place","").strip(),
+            detail=request.POST.get("detail","").strip(),
+            event_at=dt,
+            image=request.FILES.get("image"),
+            # status/category はdefaultに任せる
+        )
+        p.save()
+        return redirect("/?tab=home")
 
-            # notif
-            Notification.objects.create(
-                user=request.user,
-                notif_type="participation",  # 仮
-                text=f"投稿を作成しました: {p.title}",
-                url="/?tab=home",
-            )
-            return redirect("/?tab=home")
-    else:
-        form = PostCreateForm()
-
-    return render(request, "core/app.html", {"initial_tab": "create", "post_form": form})
-
-
-@login_required
-def post_edit(request, pk):
-    p = get_object_or_404(Post, pk=pk)
-    if p.author_id != request.user.id:
-        return HttpResponseForbidden("Not allowed")
-
-    if request.method == "POST":
-        form = PostCreateForm(request.POST, request.FILES, instance=p)
-        if form.is_valid():
-            p = form.save()
-            # tags reset
-            tag_names = form.cleaned_data.get("tags", [])
-            tag_objs = []
-            for name in tag_names:
-                t, _ = Tag.objects.get_or_create(name=name)
-                tag_objs.append(t)
-            p.tags.set(tag_objs)
-            return redirect("/?tab=home")
-    else:
-        # 既存タグをカンマで入れる
-        init = {"tags": ", ".join([t.name for t in p.tags.all()])}
-        form = PostCreateForm(instance=p, initial=init)
-
-    return render(request, "core/app.html", {"initial_tab": "home", "edit_form": form, "edit_post_id": p.id})
-
-
-@login_required
-@require_POST
-def post_delete(request, pk):
-    p = get_object_or_404(Post, pk=pk)
-    if p.author_id != request.user.id:
-        return HttpResponseForbidden("Not allowed")
-    p.delete()
-    return redirect("/?tab=home")
+    return render(request, "core/app.html", {"initial_tab":"create"})
 
 
 # -------------------------

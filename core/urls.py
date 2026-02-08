@@ -9,8 +9,9 @@ urlpatterns = [
 
     # ===== Posts =====
     path("posts/create/", views.post_create, name="post_create"),
-    path("posts/<int:pk>/edit/", views.post_edit, name="post_edit"),
-    path("posts/<int:pk>/delete/", views.post_delete, name="post_delete"),
+# TODO: post_edit 実装後に有効化
+    # path("posts/<int:pk>/edit/", views.post_edit, name="post_edit"),
+    # path("posts/<int:pk>/delete/", views.post_delete, name="post_delete"),
 
     # Favorite（views.py は toggle_favorite / 引数は pk）
     path("posts/<int:pk>/favorite/", views.toggle_favorite, name="post_toggle_favorite"),
