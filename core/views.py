@@ -205,6 +205,8 @@ def post_create(request):
         if dt is None:
             # parse_datetimeが通らない環境なら手動変換
             dt = timezone.datetime.fromisoformat(event_at_raw)
+        
+        print("DEBUG user", request.user.id, request.user.username, "has_circle", hasattr(request.user, "circle"), "circle_name", getattr(getattr(request.user, "circle", None), "name", None))
 
         p = Post(
             author=request.user,

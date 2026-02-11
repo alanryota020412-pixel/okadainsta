@@ -84,6 +84,22 @@ class Post(models.Model):
 
     def __str__(self):
         return self.title
+    
+    def save(self, *args, **kwargs):
+        print("DEBUG Post.save OVERRIDE",
+            "author:", self.author_id,
+            "circle_name(before):", repr(self.circle_name))
+
+        if not (self.circle_name or "").strip():
+            if self.author_id and hasattr(self.author, "circle"):
+                name = (self.author.circle.name or "").strip()
+                print("DEBUG circle name found:", repr(name))
+                if name:
+                    self.circle_name = name
+
+        print("DEBUG circle_name(after):", repr(self.circle_name))
+        super().save(*args, **kwargs)
+
 
 
 class Favorite(models.Model):
@@ -166,3 +182,43 @@ class PostView(models.Model):
 
     class Meta:
         indexes = [models.Index(fields=["post", "viewed_at"])]
+
+# プロフィールとサークルのDB作成機能
+
+from django.contrib.auth import get_user_model
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
+UserModel = get_user_model()
+
+@receiver(post_save, sender=UserModel)
+def save(self, *args, **kwargs):
+    # circle_name が空 or スペースのみなら補完
+    if not (self.circle_name or "").strip():
+        if self.author_id and hasattr(self.author, "profile"):
+            name = (self.author.profile.display_name or "").strip()
+            if name:
+                self.circle_name = name
+    super().save(*args, **kwargs)
+
+from django.contrib.auth import get_user_model
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
+UserModel = get_user_model()
+
+@receiver(post_save, sender=UserModel)
+def create_profile_and_circle(sender, instance, created, **kwargs):
+    if not created:
+        return
+
+    # Profileを作って display_name を初期化（username から仮置き）
+    p, _ = Profile.objects.get_or_create(user=instance)
+    if not (p.display_name or "").strip():
+        p.display_name = instance.username  # ← emailログインならここ変える
+        p.save()
+
+    # Circleも必要なら作る（ただし投稿の補完はProfile基準にしたので必須ではない）
+    Circle.objects.get_or_create(owner=instance)
+
+

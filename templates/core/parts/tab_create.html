@@ -50,6 +50,8 @@
                placeholder="例：新入生歓迎会！" type="text" required>
       </div>
 
+      <!--もはやこれいらないのでは？-->
+      {% comment %} 
       <div>
         <label class="block text-sm font-bold mb-2">サークル名</label>
         <div class="relative">
@@ -57,7 +59,8 @@
           <input name="circle_name" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-input-dark pl-11 pr-4 py-3 text-sm"
                  placeholder="例：テニスサークル" type="text">
         </div>
-      </div>
+      </div> 
+      {% endcomment %}
 
       <div>
         <label class="block text-sm font-bold mb-2">日時 <span class="text-red-500">*</span></label>
