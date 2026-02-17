@@ -4,6 +4,8 @@ from django.http import JsonResponse, HttpResponseBadRequest, HttpResponseForbid
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views.decorators.http import require_POST
+from django.utils.dateparse import parse_datetime
+from django.views.decorators.csrf import csrf_exempt
 
 from .forms import CircleForm, PostCreateForm, ProfileForm
 from .models import (
@@ -160,14 +162,12 @@ def app(request):
 # Post: detail JSON + view count
 # -------------------------
 def post_detail_json(request, pk):
-    p = get_object_or_404(Post.objects.prefetch_related("tags").select_related("author"), pk=pk)
+    p = get_object_or_404(
+        Post.objects.prefetch_related("tags", "images").select_related("author"),
+        pk=pk
+    )
 
-    # view count: 同一セッションで同一postは1回だけカウント
-    seen = request.session.get("seen_posts", [])
-    if pk not in seen:
-        PostView.objects.create(post=p, user=request.user if request.user.is_authenticated else None)
-        seen.append(pk)
-        request.session["seen_posts"] = seen
+    # view count（そのまま）
 
     data = {
         "id": p.id,
@@ -175,24 +175,25 @@ def post_detail_json(request, pk):
         "circle_name": p.circle_name,
         "place": p.place,
         "detail": p.detail,
-        "event_at": p.event_at.strftime("%Y/%m/%d %H:%M"),
+        "event_at": p.event_at.strftime("%Y/%m/%d %H:%M") if p.event_at else "",
         "status": p.effective_status,
         "category": p.category,
         "tags": [t.name for t in p.tags.all()],
-        "image_url": p.image.url if p.image else None,
+
+        # ✅ 追加：複数画像
+        "image_urls": [im.image.url for im in p.images.all()],
+
+        # （互換のため残すなら残してOK）
+        "image_url": p.image.url if getattr(p, "image", None) else None,
+
         "is_owner": (request.user.is_authenticated and p.author_id == request.user.id),
         "can_fav": request.user.is_authenticated,
     }
     return JsonResponse(data)
 
-
 # -------------------------
 # Post: create/edit/delete
 # -------------------------
-from django.utils.dateparse import parse_datetime
-from django.utils import timezone
-from django.views.decorators.csrf import csrf_exempt
-
 @login_required
 @csrf_exempt  # login実装後に外す
 def post_create(request):

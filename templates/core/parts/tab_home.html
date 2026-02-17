@@ -118,15 +118,15 @@
               <span>{{ p.detail }}</span>
               <span
                 class="text-primary cursor-pointer underline whitespace-nowrap"
-                onclick="openPostModal({{ p.id }})"
+                onclick="openPostModal({{ p.id }}, this)"
               >
                 詳細はこちら
               </span>
             </p>
           {% else %}
-                            <span
+              <span
                 class="text-primary cursor-pointer underline whitespace-nowrap"
-                onclick="openPostModal({{ p.id }})"
+                onclick="openPostModal({{ p.id }} ,this)"
               >
                 詳細はこちら
               </span>
@@ -239,16 +239,41 @@
   })();
 </script>
 <script>
-document.addEventListener("DOMContentLoaded", () => {
-  // スライダー内クリックでモーダル開く
-  document.querySelectorAll("[data-open-modal='1'] [data-src]").forEach(btn => {
-    btn.addEventListener("click", () => {
-      window.openImageModal(btn.dataset.src);
-    });
+document.addEventListener("click", (e) => {
+  const btn = e.target.closest("[data-open-modal='1'] [data-src]");
+  if (!btn) return;
+  e.preventDefault();
+  e.stopPropagation();
+  window.openImageModal(btn.dataset.src);
+});
+</script>
+<script>
+window.initSliders = function(root = document) {
+  // ① prev/next
+  if (!root) return;
+  root.querySelectorAll(".js-slider").forEach(slider => {
+    if (slider.dataset.initedNav === "1") return;
+    slider.dataset.initedNav = "1";
+
+    const wrap = slider.parentElement; // relative group
+    const prev = wrap.querySelector(".js-prev");
+    const next = wrap.querySelector(".js-next");
+
+    const page = (dir) => {
+      const firstSlide = slider.querySelector(":scope > button");
+      const w = (firstSlide && firstSlide.clientWidth) ? firstSlide.clientWidth : (slider.clientWidth || 1);
+      slider.scrollBy({ left: dir * w, behavior: "smooth" });
+    };
+
+    if (prev) prev.addEventListener("click", (e) => { e.stopPropagation(); page(-1); });
+    if (next) next.addEventListener("click", (e) => { e.stopPropagation(); page( 1); });
   });
 
-  // ドット更新
-  document.querySelectorAll(".js-slider").forEach(slider => {
+  // ② dots（使ってる場合）
+  root.querySelectorAll(".js-slider").forEach(slider => {
+    if (slider.dataset.initedDots === "1") return;
+    slider.dataset.initedDots = "1";
+
     const dotsWrap = slider.parentElement.querySelector(".js-dots");
     if (!dotsWrap) return;
     const dots = dotsWrap.querySelectorAll(".dot");
@@ -267,24 +292,9 @@ document.addEventListener("DOMContentLoaded", () => {
     window.addEventListener("resize", update);
     update();
   });
-});
-</script>
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-  document.querySelectorAll(".js-slider").forEach(slider => {
-    const wrap = slider.parentElement; // ← relative group を掴める
-    const prev = wrap.querySelector(".js-prev");
-    const next = wrap.querySelector(".js-next");
+};
 
-    const page = (dir) => {
-      const firstSlide = slider.querySelector(":scope > button");
-      const w = (firstSlide && firstSlide.clientWidth) ? firstSlide.clientWidth : (slider.clientWidth || 1);
-      slider.scrollBy({ left: dir * w, behavior: "smooth" });
-    };
-
-    if (prev) prev.addEventListener("click", (e) => { e.stopPropagation(); page(-1); });
-    if (next) next.addEventListener("click", (e) => { e.stopPropagation(); page( 1); });
-  });
-});
+// 初回DOMの分は従来どおり初期化
+document.addEventListener("DOMContentLoaded", () => window.initSliders(document));
 </script>
 </section>

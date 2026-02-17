@@ -30,4 +30,5 @@ urlpatterns = [
     # ===== Notifications =====
     path("notifications/json/", views.notifications_json, name="notifications_json"),
     path("notifications/mark-read/", views.notifications_mark_read, name="notifications_mark_read"),
+    path("<int:pk>/json/", views.post_detail_json, name="post_detail_json"),
 ]

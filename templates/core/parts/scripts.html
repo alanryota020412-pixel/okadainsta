@@ -35,6 +35,51 @@
   const postModal = document.getElementById("postModal");
   const postModalBody = document.getElementById("postModalBody");
 
+function buildModalSliderHtml(urls) {
+  if (!urls || urls.length === 0) return "";
+
+  const slides = urls.map(src => `
+    <button type="button" class="flex-none basis-full snap-start" data-src="${src}">
+      <div class="relative w-full aspect-[4/5]">
+        <img class="absolute inset-0 w-full h-full object-cover" src="${src}" alt="post image" loading="lazy">
+      </div>
+    </button>
+  `).join("");
+
+  const nav = (urls.length > 1) ? `
+    <button type="button"
+      class="js-prev absolute left-2 top-1/2 -translate-y-1/2 z-10 md:flex
+            items-center justify-center w-10 h-10 rounded-full
+            bg-black/30 hover:bg-black/50 text-white
+            opacity-0 group-hover:opacity-100 transition"
+      aria-label="prev">
+      <span class="material-symbols-outlined">chevron_left</span>
+    </button>
+    <button type="button"
+      class="js-next absolute right-2 top-1/2 -translate-y-1/2 z-10 md:flex
+            items-center justify-center w-10 h-10 rounded-full
+            bg-black/30 hover:bg-black/50 text-white
+            opacity-0 group-hover:opacity-100 transition"
+      aria-label="next">
+      <span class="material-symbols-outlined">chevron_right</span>
+    </button>
+  ` : "";
+
+  return `
+    <div class="pt-2 mb-3">
+      <div class="relative group z-10">
+        <div class="js-slider flex overflow-x-auto scroll-smooth snap-x snap-proximity
+                    [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+             data-open-modal="1">
+          ${slides}
+          <span style="flex: 0 0 8px;"></span>
+        </div>
+        ${nav}
+      </div>
+    </div>
+  `;
+}
+
   function openPostModal(postId) {
     postModalBody.textContent = "読み込み中...";
     postModal.classList.remove("hidden");
@@ -45,20 +90,28 @@
         return r.json();
       })
       .then(data => {
-        // まずはpostModalBodyだけで完結（title/detail要素分けは後でOK）
+        const urls = data.image_urls || data.images || []; // ←APIに合わせてどっちかに統一
+
+        const sliderHtml = buildModalSliderHtml(urls);
+
         postModalBody.innerHTML = `
+          ${sliderHtml}
           <div class="text-sm font-bold">${escapeHtml(data.title ?? "")}</div>
           <div class="mt-1 text-xs text-slate-500">${escapeHtml(data.circle_name ?? "")}</div>
           <div class="mt-3 text-sm whitespace-pre-wrap">${escapeHtml(data.detail ?? "")}</div>
           <div class="mt-3 text-xs text-slate-500">日時: ${escapeHtml(data.event_at ?? "")}</div>
           <div class="mt-1 text-xs text-slate-500">場所: ${escapeHtml(data.place ?? "")}</div>
         `;
+
+        // ✅ ここ（DOM差し込み直後）が正解
+        window.initSliders?.(postModalBody);
       })
       .catch(err => {
         console.error("openPostModal failed:", err);
         postModalBody.textContent = "詳細取得に失敗しました: " + err;
       });
   }
+
 
   // innerHTML使うので最低限のエスケープ
   function escapeHtml(s) {

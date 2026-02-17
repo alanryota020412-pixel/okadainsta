@@ -10,6 +10,17 @@
     </div>
     <div id="postModalBody" class="max-h-[70vh] overflow-y-auto no-scrollbar p-4 text-sm text-slate-600 dark:text-slate-300">
       <!-- JS で埋める -->
+      <div class="relative group z-10">
+        <div class="js-slider flex overflow-x-auto scroll-smooth snap-x snap-proximity
+                    [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+            data-open-modal="1">
+          <!-- button[data-src] を並べる -->
+        </div>
+
+        <button type="button" class="js-prev ...">...</button>
+        <button type="button" class="js-next ...">...</button>
+      </div>
+
     </div>
   </div>
 </div>
