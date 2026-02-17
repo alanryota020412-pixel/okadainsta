@@ -86,19 +86,26 @@ class Post(models.Model):
         return self.title
     
     def save(self, *args, **kwargs):
-        print("DEBUG Post.save OVERRIDE",
-            "author:", self.author_id,
-            "circle_name(before):", repr(self.circle_name))
-
         if not (self.circle_name or "").strip():
-            if self.author_id and hasattr(self.author, "circle"):
-                name = (self.author.circle.name or "").strip()
-                print("DEBUG circle name found:", repr(name))
-                if name:
-                    self.circle_name = name
+            name = ""
 
-        print("DEBUG circle_name(after):", repr(self.circle_name))
+            # 1) Profile.display_name 優先
+            if self.author_id and hasattr(self.author, "profile"):
+                name = (self.author.profile.display_name or "").strip()
+
+            # 2) ダメなら Circle.name
+            if not name and self.author_id and hasattr(self.author, "circle"):
+                name = (self.author.circle.name or "").strip()
+
+            # 3) それもダメなら username
+            if not name and self.author_id:
+                name = (self.author.username or "").strip()
+
+            if name:
+                self.circle_name = name
+
         super().save(*args, **kwargs)
+
 
 class Favorite(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -182,22 +189,6 @@ class PostView(models.Model):
         indexes = [models.Index(fields=["post", "viewed_at"])]
 
 # プロフィールとサークルのDB作成機能
-
-from django.contrib.auth import get_user_model
-from django.db.models.signals import post_save
-from django.dispatch import receiver
-
-UserModel = get_user_model()
-
-@receiver(post_save, sender=UserModel)
-def save(self, *args, **kwargs):
-    # circle_name が空 or スペースのみなら補完
-    if not (self.circle_name or "").strip():
-        if self.author_id and hasattr(self.author, "profile"):
-            name = (self.author.profile.display_name or "").strip()
-            if name:
-                self.circle_name = name
-    super().save(*args, **kwargs)
 
 from django.contrib.auth import get_user_model
 from django.db.models.signals import post_save
