@@ -110,5 +110,67 @@
   })();
 
   
-  function openConversation(id) { alert("会話: " + id); }
+    function openConversation(id) { alert("会話: " + id); }
+    window.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll(".js-slider").forEach((slider) => {
+        const wrapper = slider.closest(".group") || slider.parentElement;
+        const prev = wrapper?.querySelector(".js-prev");
+        const next = wrapper?.querySelector(".js-next");
+        if (!prev || !next) return;
+
+        const items = Array.from(slider.children); // ← slider直下のbuttonたち
+        const n = items.length;
+        if (n <= 1) return;
+
+        let index = 0;
+
+        const maxLeft = () => Math.max(0, slider.scrollWidth - slider.clientWidth);
+
+        const syncIndex = () => {
+          // 現在のscrollLeftに一番近いoffsetLeftをindexとして採用（ズレ補正）
+          const x = slider.scrollLeft;
+          let best = 0, bestDist = Infinity;
+          for (let i = 0; i < n; i++) {
+            const d = Math.abs(items[i].offsetLeft - x);
+            if (d < bestDist) { bestDist = d; best = i; }
+          }
+          index = best;
+        };
+
+        const go = (to) => {
+          index = Math.max(0, Math.min(n - 1, to));
+
+          // 目標位置：基本は対象要素のoffsetLeft
+          let left = items[index].offsetLeft;
+
+          // 最後の要素はstartに揃えられないことがあるので maxScrollLeft に吸い付ける
+          if (index === n - 1) left = maxLeft();
+
+          // 念のためクランプ
+          left = Math.max(0, Math.min(maxLeft(), left));
+
+          slider.scrollTo({ left, behavior: "smooth" });
+        };
+
+        // ユーザーがスワイプした時もindexを追従
+        slider.addEventListener("scroll", () => {
+          // scroll中に更新しすぎない（軽量に）
+          window.clearTimeout(slider.__t);
+          slider.__t = window.setTimeout(syncIndex, 80);
+        }, { passive: true });
+
+        prev.addEventListener("click", (e) => {
+          e.preventDefault(); e.stopPropagation();
+          syncIndex();
+          go(index - 1);
+        });
+
+        next.addEventListener("click", (e) => {
+          e.preventDefault(); e.stopPropagation();
+          syncIndex();
+          go(index + 1);
+        });
+      });
+    });
+
 </script>

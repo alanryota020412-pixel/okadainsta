@@ -11,7 +11,6 @@
         <div class="absolute top-2 left-0 w-full flex px-4 h-30 bg-white/90 dark:bg-surface-dark/90 backdrop-blur text-2xl font-bold">
           <span class="inline-flex items-center gap-3">
             <span class="material-symbols-outlined" style="text-2xl font-bold">group</span>
-            <!--たぶんサークル名を自動設定する機能がない-->
             {{ p.author.profile.display_name|default:p.circle_name }}
           </span>
           {% if p.effective_status == "closed" %}
@@ -20,20 +19,68 @@
             <span class="shrink-0 inline-flex items-center px-1.5 py-0.1 rounded-full text-[11px] font-bold bg-primary/15 text-primary ml-auto">募集中</span>
           {% endif %}
         </div>
-        <!--画像-->
-        {% if p.image %}
-          <button type="button" class="w-full block pt-12" onclick="openImageModal('{{ p.image.url }}')">
-            <div class="relative w-full aspect-[4/5]">
-              <img
-                class="absolute inset-0 w-full h-full object-cover"
-                src="{{ p.image.url }}"
-                alt="post image"
-              >
+        {# 画像（横スライダー） #}
+        {% with imgs=p.images.all %}
+          {% if imgs %}
+            <div class="pt-12">
+              <div class="relative group z-10">
+
+                <!-- 横スクロール本体 -->
+                <div class="js-slider flex overflow-x-auto scroll-smooth snap-x snap-proximity
+                            [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+                    data-open-modal="1">
+                  {% for im in imgs %}
+                    <button type="button"
+                            class="flex-none basis-full snap-start"
+                            data-src="{{ im.image.url }}">
+                      <div class="relative w-full aspect-[4/5]">
+                        <img class="absolute inset-0 w-full h-full object-cover"
+                            src="{{ im.image.url }}" alt="post image">
+                      </div>
+                    </button>
+                  {% endfor %}
+                  <span style="flex: 0 0 8px;"></span>
+                </div>
+
+                <!-- 左右ナビ（PC向け：ホバーで出る） -->
+                {% if cnt > 1 %}
+                  <button type="button"
+                    class="js-prev absolute left-2 top-1/2 -translate-y-1/2 z-10 md:flex
+                          items-center justify-center w-10 h-10 rounded-full
+                          bg-black/30 hover:bg-black/50 text-white
+                          opacity-0 group-hover:opacity-100 transition"
+                    aria-label="prev">
+                    <span class="material-symbols-outlined">chevron_left</span>
+                  </button>
+
+                  <button type="button"
+                    class="js-next absolute right-2 top-1/2 -translate-y-1/2 z-10 md:flex
+                          items-center justify-center w-10 h-10 rounded-full
+                          bg-black/30 hover:bg-black/50 text-white
+                          opacity-0 group-hover:opacity-100 transition"
+                    aria-label="next">
+                    <span class="material-symbols-outlined">chevron_right</span>
+                  </button>
+                {% endif %}
+
+                {# ドットは不要ならこのブロック自体消してOK #}
+
+              </div>
             </div>
-          </button>
-        {% else %}
-          <div class="pt-12"></div>
-        {% endif %}
+
+          {% elif p.image %}
+            <!-- 旧データ互換：単数 -->
+            <button type="button" class="w-full block pt-12" onclick="openImageModal('{{ p.image.url }}')">
+              <div class="relative w-full aspect-[4/5]">
+                <img class="absolute inset-0 w-full h-full object-cover"
+                    src="{{ p.image.url }}" alt="post image">
+              </div>
+            </button>
+          {% else %}
+            <div class="pt-12"></div>
+          {% endif %}
+        {% endwith %}
+
       <!--画像下部-->
       <div class="px-4 pb-4 pt-2">
         <div class="mt-0 flex items-center justify-between">
@@ -92,6 +139,8 @@
         まだ投稿がありません。
       </div>
     {% endfor %}
+  </div>
+
     <!-- 画像全画面モーダル（forの外に1個だけ） -->
       <div
         id="imageModal"
@@ -106,21 +155,136 @@
           onclick="event.stopPropagation()"
         >
       </div>
-        <script>
-          // DOMが出来た後に取る（ここが超重要）
-          const imageModal = document.getElementById("imageModal");
-          const imageModalImg = document.getElementById("imageModalImg");
+<script>
+  (function () {
+    let inited = false;
 
-          // onclick="openImageModal(...)" から呼べるように window に生やす
-          window.openImageModal = function (src) {
-            imageModalImg.src = src;
-            imageModal.classList.remove("hidden");
-          };
+    function initCreateUploader() {
+      if (inited) return;
 
-          window.closeImageModal = function () {
-            imageModal.classList.add("hidden");
-            imageModalImg.src = "";
-          };
-        </script>
-      </div>
+      // ✅ tab-createの中から探す（これが重要）
+      const root = document.getElementById("tab-create");
+      if (!root) return;
+
+      const input  = root.querySelector("#imageInput");
+      const preview = root.querySelector("#imagePreview");
+      const prompt  = root.querySelector("#uploadPrompt");
+      const thumbs  = root.querySelector("#thumbs");
+
+      // ✅ どれか無いなら何もしない（落ちない）
+      if (!input || !preview || !prompt || !thumbs) return;
+
+      inited = true;
+
+      let urls = [];
+      function cleanupUrls() {
+        for (const u of urls) URL.revokeObjectURL(u);
+        urls = [];
+      }
+
+      input.addEventListener("change", () => {
+        cleanupUrls();
+        thumbs.innerHTML = "";
+
+        const files = Array.from(input.files || []);
+        if (files.length === 0) {
+          preview.classList.add("hidden");
+          prompt.classList.remove("hidden");
+          thumbs.classList.add("hidden");
+          return;
+        }
+
+        const mainUrl = URL.createObjectURL(files[0]);
+        urls.push(mainUrl);
+        preview.src = mainUrl;
+        preview.classList.remove("hidden");
+        prompt.classList.add("hidden");
+
+        thumbs.classList.remove("hidden");
+        files.forEach((file, idx) => {
+          const u = (idx === 0) ? mainUrl : URL.createObjectURL(file);
+          if (idx !== 0) urls.push(u);
+
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "shrink-0 rounded-lg overflow-hidden border border-white/30";
+          btn.style.width = "56px";
+          btn.style.height = "56px";
+
+          const img = document.createElement("img");
+          img.src = u;
+          img.alt = "thumb";
+          img.className = "w-full h-full object-cover";
+          btn.appendChild(img);
+
+          btn.addEventListener("click", () => { preview.src = u; });
+          thumbs.appendChild(btn);
+        });
+      });
+    }
+
+    // ✅ DOMができたら1回初期化
+    document.addEventListener("DOMContentLoaded", initCreateUploader);
+
+    // ✅ タブ切替があるなら、createを開いた時にも初期化したい
+    // ここがキモ：setTabがグローバルにある前提でフックする
+    const originalSetTab = window.setTab;
+    if (typeof originalSetTab === "function") {
+      window.setTab = function(tab, push) {
+        const r = originalSetTab(tab, push);
+        if (tab === "create") initCreateUploader();
+        return r;
+      };
+    }
+  })();
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  // スライダー内クリックでモーダル開く
+  document.querySelectorAll("[data-open-modal='1'] [data-src]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      window.openImageModal(btn.dataset.src);
+    });
+  });
+
+  // ドット更新
+  document.querySelectorAll(".js-slider").forEach(slider => {
+    const dotsWrap = slider.parentElement.querySelector(".js-dots");
+    if (!dotsWrap) return;
+    const dots = dotsWrap.querySelectorAll(".dot");
+    if (dots.length <= 1) return;
+
+    const update = () => {
+      const w = slider.clientWidth || 1;
+      const idx = Math.round(slider.scrollLeft / w);
+      dots.forEach((d, i) => {
+        d.classList.toggle("bg-white/90", i === idx);
+        d.classList.toggle("bg-white/40", i !== idx);
+      });
+    };
+
+    slider.addEventListener("scroll", () => requestAnimationFrame(update));
+    window.addEventListener("resize", update);
+    update();
+  });
+});
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll(".js-slider").forEach(slider => {
+    const wrap = slider.parentElement; // ← relative group を掴める
+    const prev = wrap.querySelector(".js-prev");
+    const next = wrap.querySelector(".js-next");
+
+    const page = (dir) => {
+      const firstSlide = slider.querySelector(":scope > button");
+      const w = (firstSlide && firstSlide.clientWidth) ? firstSlide.clientWidth : (slider.clientWidth || 1);
+      slider.scrollBy({ left: dir * w, behavior: "smooth" });
+    };
+
+    if (prev) prev.addEventListener("click", (e) => { e.stopPropagation(); page(-1); });
+    if (next) next.addEventListener("click", (e) => { e.stopPropagation(); page( 1); });
+  });
+});
+</script>
 </section>

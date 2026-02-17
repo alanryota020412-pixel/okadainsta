@@ -100,8 +100,6 @@ class Post(models.Model):
         print("DEBUG circle_name(after):", repr(self.circle_name))
         super().save(*args, **kwargs)
 
-
-
 class Favorite(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
@@ -221,4 +219,8 @@ def create_profile_and_circle(sender, instance, created, **kwargs):
     # Circleも必要なら作る（ただし投稿の補完はProfile基準にしたので必須ではない）
     Circle.objects.get_or_create(owner=instance)
 
+class PostImage(models.Model):
+    post = models.ForeignKey("Post", on_delete=models.CASCADE, related_name="images")
+    image = models.ImageField(upload_to="posts/")
+    created_at = models.DateTimeField(auto_now_add=True)
 

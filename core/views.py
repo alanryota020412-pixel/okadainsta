@@ -17,7 +17,9 @@ from .models import (
     PostView,
     Profile,
     Tag,
+    PostImage,
 )
+
 
 # -------------------------
 # App（単一画面）
@@ -29,12 +31,14 @@ def app(request):
     posts_qs = (
         Post.objects.all()
         .select_related("author")
-        .prefetch_related("tags")
+        .prefetch_related("tags", "images")  # ← 追加
         .annotate(
             favs_count=Count("favorites", distinct=True),
             views_count=Count("views", distinct=True),
+            image_count=Count("images", distinct=True),  # ← 追加
         )
     )
+
 
     # 並び替え
     sort = request.GET.get("sort") or "recent"
@@ -190,23 +194,31 @@ from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 
 @login_required
-@csrf_exempt # login実装後に外す
+@csrf_exempt  # login実装後に外す
 def post_create(request):
     if request.method == "POST":
-        # 必須チェックは自前（HTML required + サーバ側も）
         title = request.POST.get("title", "").strip()
         event_at_raw = request.POST.get("event_at", "").strip()
 
         if not title or not event_at_raw:
             return render(request, "core/app.html", {"initial_tab":"create", "errors":["title/event_at required"]})
 
-        # datetime-local は "YYYY-MM-DDTHH:MM"
         dt = parse_datetime(event_at_raw)
         if dt is None:
-            # parse_datetimeが通らない環境なら手動変換
             dt = timezone.datetime.fromisoformat(event_at_raw)
-        
-        print("DEBUG user", request.user.id, request.user.username, "has_circle", hasattr(request.user, "circle"), "circle_name", getattr(getattr(request.user, "circle", None), "name", None))
+
+        if timezone.is_naive(dt):
+            dt = timezone.make_aware(dt, timezone.get_current_timezone())
+
+        print("DEBUG user", request.user.id, request.user.username,
+              "has_circle", hasattr(request.user, "circle"),
+              "circle_name", getattr(getattr(request.user, "circle", None), "name", None))
+
+        # ✅ ここで必ず定義（新:複数 / 旧:単数 両対応）
+        images = request.FILES.getlist("images")
+        single = request.FILES.get("image")
+        if not images and single:
+            images = [single]
 
         p = Post(
             author=request.user,
@@ -215,13 +227,22 @@ def post_create(request):
             place=request.POST.get("place","").strip(),
             detail=request.POST.get("detail","").strip(),
             event_at=dt,
-            image=request.FILES.get("image"),
-            # status/category はdefaultに任せる
         )
+
+        # ✅ ここで参照しても NameError にならない
+        if images:
+            p.image = images[0]  # 1枚目だけ保存（既存 p.image 参照を壊さない）
+
         p.save()
+
+        # ✅ 複数をDBに保存
+        for img in images:
+            PostImage.objects.create(post=p, image=img)
+
         return redirect("/?tab=home")
 
     return render(request, "core/app.html", {"initial_tab":"create"})
+
 
 
 # -------------------------
