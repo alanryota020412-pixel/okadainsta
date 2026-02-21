@@ -140,7 +140,7 @@
   </div>
 
   {% if user.is_authenticated %}
-  <form method="post" action="{% url 'logout' %}" class="mt-4">
+  <form method="post" action="{% url 'account_logout' %}" class="mt-4">
     {% csrf_token %}
     <button type="submit" class="w-full text-left text-red-400 font-extrabold inline-flex items-center gap-2">
       <span class="material-symbols-outlined">logout</span>
@@ -154,7 +154,7 @@
     </div>
     <div class="text-lg font-bold">ログインが必要です</div>
     <p class="text-sm text-slate-400 mt-2">プロフィールを見るにはログインしてください</p>
-    <a href="{% url 'login' %}" class="mt-6 rounded-xl bg-primary text-background-dark px-8 py-3 font-bold">
+    <a href="{% url 'account_login' %}" class="mt-6 rounded-xl bg-primary text-background-dark px-8 py-3 font-bold">
       ログイン画面へ
     </a>
   </div>

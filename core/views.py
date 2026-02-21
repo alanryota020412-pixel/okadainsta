@@ -439,13 +439,4 @@ def notifications_mark_read(request):
     return JsonResponse({"ok": True})
 
 
-def signup(request):
-    if request.method == "POST":
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            login(request, user)
-            return redirect("core:app")
-    else:
-        form = UserCreationForm()
-    return render(request, "registration/signup.html", {"form": form})
+

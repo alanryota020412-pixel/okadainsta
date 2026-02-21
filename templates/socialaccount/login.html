@@ -1,0 +1,13 @@
+{% extends "registration/login.html" %}
+{% load socialaccount %}
+
+{% block content %}
+<!-- Google Login Button Integration -->
+<div class="pt-2 pb-6">
+    <a href="{% provider_login_url 'google' %}"
+        class="flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-xl h-14 px-5 bg-white border border-gray-300 dark:border-[#315f68] dark:bg-[#182f34] text-gray-900 dark:text-white text-base font-bold leading-normal tracking-wide shadow-sm active:scale-[0.98] transition-transform">
+        <span class="material-symbols-outlined mr-2">login</span>
+        <span class="truncate">Googleでログイン</span>
+    </a>
+</div>
+{% endblock %}
