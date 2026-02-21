@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
+from django.contrib.auth.models import User
 
 User = settings.AUTH_USER_MODEL
 
@@ -12,6 +13,12 @@ class Profile(models.Model):
     role = models.CharField(max_length=100, blank=True)
     bio = models.TextField(blank=True)
     avatar = models.ImageField(upload_to="avatars/", blank=True, null=True)
+    circle_name = models.CharField(max_length=120, blank=True, default="")
+    description = models.TextField(blank=True, default="")  # 活動内容
+    place = models.CharField(max_length=120, blank=True, default="")
+    frequency = models.CharField(max_length=60, blank=True, default="")
+    x_url = models.URLField(blank=True, default="")
+    instagram_url = models.URLField(blank=True, default="")
 
     stats_posts = models.PositiveIntegerField(default=0)
     stats_favs = models.PositiveIntegerField(default=0)
@@ -23,11 +30,24 @@ class Profile(models.Model):
 
 class Circle(models.Model):
     owner = models.OneToOneField(User, on_delete=models.CASCADE, related_name="circle")
-    name = models.CharField(max_length=80, blank=True)
-    activity_days = models.CharField(max_length=120, blank=True)
-    members_count = models.PositiveIntegerField(default=0)
-    sns_link = models.URLField(blank=True)
-    description = models.TextField(blank=True)
+
+    name = models.CharField(max_length=100, blank=True, default="")
+    bio = models.TextField(blank=True, default="")
+    avatar = models.ImageField(upload_to="circle_avatars/", blank=True, null=True)
+
+    place = models.CharField(max_length=100, blank=True, default="")
+
+    FREQ_CHOICES = [
+        ("weekly1", "週1回"),
+        ("weekly2", "週2回"),
+        ("weekly3", "週3回"),
+        ("monthly", "月数回"),
+        ("irregular", "不定期"),
+    ]
+    frequency = models.CharField(max_length=20, choices=FREQ_CHOICES, blank=True, default="weekly2")
+
+    x_url = models.URLField(blank=True, default="")
+    instagram_url = models.URLField(blank=True, default="")
 
     def __str__(self):
         return self.name or f"circle:{self.owner_id}"

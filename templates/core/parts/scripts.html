@@ -4,7 +4,16 @@
 
   function setTab(tab, push=true) {
     tabSections.forEach(s => s.classList.add("hidden"));
-    const el = document.getElementById(`tab-${tab}`);
+
+    // 1) まず tab-{tab} を探す（例: tab-profile_edit）
+    let el = document.getElementById(`tab-${tab}`);
+
+    // 2) 無ければ '_' を '-' に変換して探す（例: tab-profile-edit）
+    if (!el) {
+      const normalized = String(tab).replaceAll("_", "-");
+      el = document.getElementById(`tab-${normalized}`);
+    }
+
     if (el) el.classList.remove("hidden");
 
     navButtons.forEach(b => {
@@ -31,7 +40,6 @@
 
   setTab("{{ initial_tab|default:'home' }}", false);
 
-  // Modal
   const postModal = document.getElementById("postModal");
   const postModalBody = document.getElementById("postModalBody");
 
@@ -49,3 +57,54 @@
   }
   function openConversation(id) { alert("会話: " + id); }
 </script>
+
+<script>
+  const circleModal = document.getElementById("circleModal");
+  const circleModalTitle = document.getElementById("circleModalTitle");
+  const circleModalBody = document.getElementById("circleModalBody");
+  const circleModalLinks = document.getElementById("circleModalLinks");
+
+  function closeCircleModal() {
+    circleModal.classList.add("hidden");
+    circleModalTitle.textContent = "";
+    circleModalBody.textContent = "";
+    circleModalLinks.innerHTML = "";
+  }
+
+  async function openCircleProfile(profileId) {
+    try {
+      const res = await fetch(`/api/profiles/${profileId}/`);
+      const data = await res.json();
+      if (!data.ok) throw new Error("api error");
+
+      const p = data.profile;
+      circleModalTitle.textContent = p.circle_name || "サークル";
+
+      const lines = [];
+      if (p.bio) lines.push(p.bio);
+      if (p.place || p.frequency) lines.push(`📍 ${p.place || ""}  /  🗓️ ${p.frequency || ""}`);
+      circleModalBody.textContent = lines.join("\n");
+
+      const links = [];
+      if (p.x_url) links.push(`<a class="text-primary underline" href="${p.x_url}" target="_blank" rel="noopener">Xを見る</a>`);
+      if (p.instagram_url) links.push(`<a class="text-primary underline" href="${p.instagram_url}" target="_blank" rel="noopener">Instagramを見る</a>`);
+      circleModalLinks.innerHTML = links.length ? links.join("<br>") : `<span class="text-slate-400">SNSリンクなし</span>`;
+
+      circleModal.classList.remove("hidden");
+    } catch (e) {
+      alert("サークル情報の取得に失敗しました");
+      console.error(e);
+    }
+  }
+</script>
+
+<script>
+function openCircleProfile(profileId){
+  location.href = '/?tab=profile&circle_id=${circleId}';
+  const url = new URL(window.location.href);
+  url.searchParams.set("tab", "profile");
+  url.searchParams.set("profile_id", profileId);
+  window.location.href = url.toString();
+}
+</script>
+
