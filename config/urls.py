@@ -5,9 +5,8 @@ from django.urls import path, include
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-
-    # namespace を確実に登録
-    path("", include(("core.urls", "core"), namespace="core")),
+    path("accounts/", include("allauth.urls")),
+    path("", include("core.urls")),
 ]
 
 # 開発中だけ media 配信
