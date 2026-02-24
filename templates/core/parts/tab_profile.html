@@ -15,11 +15,11 @@
   <div class="mt-4 flex flex-col items-center text-center">
     <div class="size-24 rounded-full overflow-hidden ring-4 ring-primary/20 bg-slate-200 dark:bg-slate-800">
       {% if profile and profile.avatar %}
-        <img src="{{ profile.avatar.url }}" class="w-full h-full object-cover" alt="avatar"/>
+      <img src="{{ profile.avatar.url }}" class="w-full h-full object-cover" alt="avatar" />
       {% else %}
-        <div class="w-full h-full flex items-center justify-center text-slate-400">
-          <span class="material-symbols-outlined" style="font-size:44px;">person</span>
-        </div>
+      <div class="w-full h-full flex items-center justify-center text-slate-400">
+        <span class="material-symbols-outlined" style="font-size:44px;">person</span>
+      </div>
       {% endif %}
     </div>
 
@@ -84,41 +84,47 @@
   <!-- list -->
   <div class="mt-4 grid gap-3">
     {% for p in my_posts_preview %}
-      <button type="button" class="w-full text-left rounded-2xl bg-surface-dark border border-slate-700/40 p-4 hover:opacity-95" onclick="openPostModal({{ p.id }})">
-        <div class="flex items-center gap-3">
-          <div class="w-16 h-12 rounded-xl overflow-hidden bg-slate-800"></div>
-          <div class="flex-1">
-            <div class="text-xs text-primary font-bold">{{ p.effective_status|default:"募集中" }}</div>
-            <div class="text-sm font-bold line-clamp-1">{{ p.title }}</div>
-            <div class="text-xs text-slate-400">{{ p.created_at|date:"Y/m/d" }} 投稿</div>
-          </div>
-          <span class="material-symbols-outlined text-slate-400">chevron_right</span>
+    <button type="button"
+      class="w-full text-left rounded-2xl bg-surface-dark border border-slate-700/40 p-4 hover:opacity-95"
+      onclick="openPostModal({{ p.id }})">
+      <div class="flex items-center gap-3">
+        <div class="w-16 h-12 rounded-xl overflow-hidden bg-slate-800"></div>
+        <div class="flex-1">
+          <div class="text-xs text-primary font-bold">{{ p.effective_status|default:"募集中" }}</div>
+          <div class="text-sm font-bold line-clamp-1">{{ p.title }}</div>
+          <div class="text-xs text-slate-400">{{ p.created_at|date:"Y/m/d" }} 投稿</div>
         </div>
-      </button>
+        <span class="material-symbols-outlined text-slate-400">chevron_right</span>
+      </div>
+    </button>
     {% empty %}
-      <button type="button" class="w-full text-left rounded-2xl bg-surface-dark border border-slate-700/40 p-4 hover:opacity-95" onclick="alert('ここは後で投稿一覧にする');">
-        <div class="flex items-center gap-3">
-          <div class="w-16 h-12 rounded-xl overflow-hidden bg-slate-800"></div>
-          <div class="flex-1">
-            <div class="text-xs text-primary font-bold">募集中</div>
-            <div class="text-sm font-bold line-clamp-1">春の新歓テニス体験会！</div>
-            <div class="text-xs text-slate-400">2024/04/15 投稿</div>
-          </div>
-          <span class="material-symbols-outlined text-slate-400">chevron_right</span>
+    <button type="button"
+      class="w-full text-left rounded-2xl bg-surface-dark border border-slate-700/40 p-4 hover:opacity-95"
+      onclick="alert('ここは後で投稿一覧にする');">
+      <div class="flex items-center gap-3">
+        <div class="w-16 h-12 rounded-xl overflow-hidden bg-slate-800"></div>
+        <div class="flex-1">
+          <div class="text-xs text-primary font-bold">募集中</div>
+          <div class="text-sm font-bold line-clamp-1">春の新歓テニス体験会！</div>
+          <div class="text-xs text-slate-400">2024/04/15 投稿</div>
         </div>
-      </button>
+        <span class="material-symbols-outlined text-slate-400">chevron_right</span>
+      </div>
+    </button>
 
-      <button type="button" class="w-full text-left rounded-2xl bg-surface-dark border border-slate-700/40 p-4 hover:opacity-95" onclick="alert('ここは後で投稿一覧にする');">
-        <div class="flex items-center gap-3">
-          <div class="w-16 h-12 rounded-xl overflow-hidden bg-slate-800"></div>
-          <div class="flex-1">
-            <div class="text-xs text-slate-400 font-bold">終了</div>
-            <div class="text-sm font-bold line-clamp-1">第1回 カフェ交流会 at 渋谷</div>
-            <div class="text-xs text-slate-400">2024/03/20 投稿</div>
-          </div>
-          <span class="material-symbols-outlined text-slate-400">chevron_right</span>
+    <button type="button"
+      class="w-full text-left rounded-2xl bg-surface-dark border border-slate-700/40 p-4 hover:opacity-95"
+      onclick="alert('ここは後で投稿一覧にする');">
+      <div class="flex items-center gap-3">
+        <div class="w-16 h-12 rounded-xl overflow-hidden bg-slate-800"></div>
+        <div class="flex-1">
+          <div class="text-xs text-slate-400 font-bold">終了</div>
+          <div class="text-sm font-bold line-clamp-1">第1回 カフェ交流会 at 渋谷</div>
+          <div class="text-xs text-slate-400">2024/03/20 投稿</div>
         </div>
-      </button>
+        <span class="material-symbols-outlined text-slate-400">chevron_right</span>
+      </div>
+    </button>
     {% endfor %}
   </div>
 
@@ -133,9 +139,24 @@
     </button>
   </div>
 
-  <button type="button" class="mt-4 w-full text-left text-red-400 font-extrabold inline-flex items-center gap-2"
-    onclick="alert('ログイン機能は一旦オフなのでログアウトも未実装');">
-    <span class="material-symbols-outlined">logout</span>
-    ログアウト
-  </button>
+  {% if user.is_authenticated %}
+  <form method="post" action="{% url 'account_logout' %}" class="mt-4">
+    {% csrf_token %}
+    <button type="submit" class="w-full text-left text-red-400 font-extrabold inline-flex items-center gap-2">
+      <span class="material-symbols-outlined">logout</span>
+      ログアウト
+    </button>
+  </form>
+  {% else %}
+  <div class="mt-10 flex flex-col items-center justify-center text-center">
+    <div class="size-20 rounded-full bg-slate-800 flex items-center justify-center text-slate-500 mb-4">
+      <span class="material-symbols-outlined" style="font-size:40px;">lock</span>
+    </div>
+    <div class="text-lg font-bold">ログインが必要です</div>
+    <p class="text-sm text-slate-400 mt-2">プロフィールを見るにはログインしてください</p>
+    <a href="{% url 'account_login' %}" class="mt-6 rounded-xl bg-primary text-background-dark px-8 py-3 font-bold">
+      ログイン画面へ
+    </a>
+  </div>
+  {% endif %}
 </section>
