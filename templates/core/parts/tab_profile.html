@@ -99,7 +99,7 @@
     </div>
   </div>
 
-  <!-- 投稿一覧（そのまま） -->
+  <!-- 投稿一覧 -->
   <div class="mt-4 grid gap-3">
     {% for post in my_posts_preview %}
       <button type="button"
@@ -123,14 +123,26 @@
   </div>
 
   {% if user.is_authenticated %}
-    <form method="post" action="{% url 'logout' %}" class="mt-6">
-      {% csrf_token %}
-      <button type="submit"
-        class="w-full text-left text-red-400 font-extrabold inline-flex items-center gap-2 hover:text-red-300">
-        <span class="material-symbols-outlined">logout</span>
-        ログアウト
-      </button>
-    </form>
+  <form method="post" action="{% url 'account_logout' %}" class="mt-6">
+    {% csrf_token %}
+    <button type="submit"
+      class="w-full text-left text-red-400 font-extrabold inline-flex items-center gap-2 hover:text-red-300">
+      <span class="material-symbols-outlined">logout</span>
+      ログアウト
+    </button>
+  </form>
+  {% else %}
+  <div class="mt-10 flex flex-col items-center justify-center text-center">
+    <div class="size-20 rounded-full bg-slate-800 flex items-center justify-center text-slate-500 mb-4">
+      <span class="material-symbols-outlined" style="font-size:40px;">lock</span>
+    </div>
+    <div class="text-lg font-bold">ログインが必要です</div>
+    <p class="text-sm text-slate-400 mt-2">プロフィールを見るにはログインしてください</p>
+    <a href="{% url 'account_login' %}"
+       class="mt-6 rounded-xl bg-primary text-background-dark px-8 py-3 font-bold">
+      ログイン画面へ
+    </a>
+  </div>
   {% endif %}
 
 </section>

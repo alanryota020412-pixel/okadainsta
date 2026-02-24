@@ -43,10 +43,94 @@
   const postModal = document.getElementById("postModal");
   const postModalBody = document.getElementById("postModalBody");
 
+function buildModalSliderHtml(urls) {
+  if (!urls || urls.length === 0) return "";
+
+  const slides = urls.map(src => `
+    <button type="button" class="flex-none basis-full snap-start" data-src="${src}">
+      <div class="relative w-full aspect-[4/5]">
+        <img class="absolute inset-0 w-full h-full object-cover" src="${src}" alt="post image" loading="lazy">
+      </div>
+    </button>
+  `).join("");
+
+  const nav = (urls.length > 1) ? `
+    <button type="button"
+      class="js-prev absolute left-2 top-1/2 -translate-y-1/2 z-10 md:flex
+            items-center justify-center w-10 h-10 rounded-full
+            bg-black/30 hover:bg-black/50 text-white
+            opacity-0 group-hover:opacity-100 transition"
+      aria-label="prev">
+      <span class="material-symbols-outlined">chevron_left</span>
+    </button>
+    <button type="button"
+      class="js-next absolute right-2 top-1/2 -translate-y-1/2 z-10 md:flex
+            items-center justify-center w-10 h-10 rounded-full
+            bg-black/30 hover:bg-black/50 text-white
+            opacity-0 group-hover:opacity-100 transition"
+      aria-label="next">
+      <span class="material-symbols-outlined">chevron_right</span>
+    </button>
+  ` : "";
+
+  return `
+    <div class="pt-2 mb-3">
+      <div class="relative group z-10">
+        <div class="js-slider flex overflow-x-auto scroll-smooth snap-x snap-proximity
+                    [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+             data-open-modal="1">
+          ${slides}
+          <span style="flex: 0 0 8px;"></span>
+        </div>
+        ${nav}
+      </div>
+    </div>
+  `;
+}
+
   function openPostModal(postId) {
-    postModalBody.textContent = "投稿ID: " + postId + "（ここは後で詳細表示を実装）";
+    postModalBody.textContent = "読み込み中...";
     postModal.classList.remove("hidden");
+
+    fetch(`/posts/${postId}/json/`)
+      .then(r => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.json();
+      })
+      .then(data => {
+        const urls = data.image_urls || data.images || []; // ←APIに合わせてどっちかに統一
+
+        const sliderHtml = buildModalSliderHtml(urls);
+
+        postModalBody.innerHTML = `
+          ${sliderHtml}
+          <div class="text-sm font-bold">${escapeHtml(data.title ?? "")}</div>
+          <div class="mt-1 text-xs text-slate-500">${escapeHtml(data.circle_name ?? "")}</div>
+          <div class="mt-3 text-sm whitespace-pre-wrap">${escapeHtml(data.detail ?? "")}</div>
+          <div class="mt-3 text-xs text-slate-500">日時: ${escapeHtml(data.event_at ?? "")}</div>
+          <div class="mt-1 text-xs text-slate-500">場所: ${escapeHtml(data.place ?? "")}</div>
+        `;
+
+        // ✅ ここ（DOM差し込み直後）が正解
+        window.initSliders?.(postModalBody);
+      })
+      .catch(err => {
+        console.error("openPostModal failed:", err);
+        postModalBody.textContent = "詳細取得に失敗しました: " + err;
+      });
   }
+
+
+  // innerHTML使うので最低限のエスケープ
+  function escapeHtml(s) {
+    return String(s)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#39;");
+  }
+
   function closePostModal() {
     postModal.classList.add("hidden");
     postModalBody.textContent = "";
@@ -55,7 +139,101 @@
   function toggleFavorite(postId) {
     alert("保存（favorite）はまだ未実装です: " + postId);
   }
-  function openConversation(id) { alert("会話: " + id); }
+
+  // --- 画像アップロード：選択したらプレビュー表示 ---
+  (function () {
+    const input = document.getElementById("imageInput");
+    const preview = document.getElementById("imagePreview");
+    if (!input || !preview) return; // createタブ以外なら何もしない
+
+    input.addEventListener("change", () => {
+      const file = input.files && input.files[0];
+      if (!file) {
+        preview.src = "";
+        preview.classList.add("hidden");
+        return;
+      }
+
+      // 5MBチェック（UIの文言と合わせる）
+      const maxBytes = 5 * 1024 * 1024;
+      if (file.size > maxBytes) {
+        alert("画像が大きすぎます（最大5MB）");
+        input.value = "";
+        preview.src = "";
+        preview.classList.add("hidden");
+        return;
+      }
+
+      const url = URL.createObjectURL(file);
+      preview.src = url;
+      preview.classList.remove("hidden");
+    });
+  })();
+
+  
+    function openConversation(id) { alert("会話: " + id); }
+    window.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll(".js-slider").forEach((slider) => {
+        const wrapper = slider.closest(".group") || slider.parentElement;
+        const prev = wrapper?.querySelector(".js-prev");
+        const next = wrapper?.querySelector(".js-next");
+        if (!prev || !next) return;
+
+        const items = Array.from(slider.children); // ← slider直下のbuttonたち
+        const n = items.length;
+        if (n <= 1) return;
+
+        let index = 0;
+
+        const maxLeft = () => Math.max(0, slider.scrollWidth - slider.clientWidth);
+
+        const syncIndex = () => {
+          // 現在のscrollLeftに一番近いoffsetLeftをindexとして採用（ズレ補正）
+          const x = slider.scrollLeft;
+          let best = 0, bestDist = Infinity;
+          for (let i = 0; i < n; i++) {
+            const d = Math.abs(items[i].offsetLeft - x);
+            if (d < bestDist) { bestDist = d; best = i; }
+          }
+          index = best;
+        };
+
+        const go = (to) => {
+          index = Math.max(0, Math.min(n - 1, to));
+
+          // 目標位置：基本は対象要素のoffsetLeft
+          let left = items[index].offsetLeft;
+
+          // 最後の要素はstartに揃えられないことがあるので maxScrollLeft に吸い付ける
+          if (index === n - 1) left = maxLeft();
+
+          // 念のためクランプ
+          left = Math.max(0, Math.min(maxLeft(), left));
+
+          slider.scrollTo({ left, behavior: "smooth" });
+        };
+
+        // ユーザーがスワイプした時もindexを追従
+        slider.addEventListener("scroll", () => {
+          // scroll中に更新しすぎない（軽量に）
+          window.clearTimeout(slider.__t);
+          slider.__t = window.setTimeout(syncIndex, 80);
+        }, { passive: true });
+
+        prev.addEventListener("click", (e) => {
+          e.preventDefault(); e.stopPropagation();
+          syncIndex();
+          go(index - 1);
+        });
+
+        next.addEventListener("click", (e) => {
+          e.preventDefault(); e.stopPropagation();
+          syncIndex();
+          go(index + 1);
+        });
+      });
+    });
+
 </script>
 
 <script>

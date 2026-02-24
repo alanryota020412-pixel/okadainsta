@@ -6,7 +6,7 @@
     </div>
     <div>
       <div class="text-sm font-bold leading-tight">Circle Room</div>
-      <div class="text-[11px] text-slate-500 dark:text-slate-400 leading-tight">新歓・サークル掲示板</div>
+      {% comment %} <div class="text-[11px] text-slate-500 dark:text-slate-400 leading-tight">新歓・サークル掲示板</div> {% endcomment %}
     </div>
   </div>
 
@@ -25,7 +25,7 @@
       <span class="material-symbols-outlined" style="font-size:24px;">person</span>
     </button>
     {% else %}
-    <a href="{% url 'login' %}"
+    <a href="{% url 'account_login' %}"
       class="flex items-center justify-center p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors">
       <span class="material-symbols-outlined" style="font-size:24px;">login</span>
     </a>

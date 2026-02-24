@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html class="dark" lang="ja">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Circle Room - アカウント設定</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0dccf2",
+                        "background-light": "#f5f8f8",
+                        "background-dark": "#101f22",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark font-display antialiased">
+    <div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+        <!-- Header / Logo Area -->
+        <div class="flex flex-col items-center justify-center pt-10 pb-6 px-4">
+            <div
+                class="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary shadow-lg shadow-primary/20">
+                <span class="material-symbols-outlined text-background-dark text-4xl">person_add</span>
+            </div>
+            <h1 class="text-gray-900 dark:text-white tracking-tight text-[28px] font-bold leading-tight text-center">
+                あと一歩です！
+            </h1>
+            <p class="mt-1 text-gray-500 dark:text-[#90c1cb] text-sm font-medium">アプリでの表示名を決めてください</p>
+        </div>
+
+        <!-- Signup Form Section -->
+        <div class="flex flex-col w-full max-w-[480px] mx-auto px-6 pb-20">
+            <div
+                class="bg-white/5 dark:bg-white/[0.02] border border-gray-200 dark:border-white/10 rounded-2xl p-6 backdrop-blur-sm mb-6">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="size-12 rounded-full overflow-hidden bg-slate-800 flex-shrink-0">
+                        {# Googleのプロフィール画像があれば表示 (オプション) #}
+                    </div>
+                    <div class="overflow-hidden">
+                        <div class="text-xs text-gray-400 dark:text-[#90c1cb]/60 uppercase font-bold tracking-wider">
+                            ログイン中</div>
+                        <div class="text-gray-900 dark:text-white font-bold truncate">{{ user.email }}</div>
+                    </div>
+                </div>
+
+                <form method="post" class="space-y-6">
+                    {% csrf_token %}
+
+                    {% for field in form %}
+                    <div class="flex flex-col gap-1.5">
+                        <label class="flex flex-col w-full">
+                            <p class="text-gray-700 dark:text-white text-sm font-semibold leading-normal pb-1 px-1">
+                                {% if field.name == 'username' %}ユーザー名（ID）{% else %}{{ field.label }}{% endif %}
+                            </p>
+                            <div class="relative">
+                                <input name="{{ field.name }}" value="{{ field.value|default:'' }}"
+                                    class="form-input flex w-full rounded-xl text-gray-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-gray-300 dark:border-[#315f68] bg-white dark:bg-[#182f34] focus:border-primary h-14 placeholder:text-gray-400 dark:placeholder:text-[#90c1cb]/50 px-4 text-base font-normal transition-all"
+                                    placeholder="例: circle_taro" {% if field.field.required %}required{% endif %}>
+                            </div>
+                            {% if field.help_text %}
+                            <p class="text-[11px] text-gray-400 dark:text-[#90c1cb]/50 mt-1.5 px-1 leading-relaxed">
+                                ※ 他のユーザーと重複しない名前を入力してください
+                            </p>
+                            {% endif %}
+                            {% for error in field.errors %}
+                            <p class="text-red-400 text-xs mt-1.5 px-1 font-medium flex items-center gap-1">
+                                <span class="material-symbols-outlined text-sm">error</span>
+                                {{ error }}
+                            </p>
+                            {% endfor %}
+                        </label>
+                    </div>
+                    {% endfor %}
+
+                    <!-- Submit Button -->
+                    <div class="pt-2">
+                        <button type="submit"
+                            class="flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-xl h-14 px-5 bg-primary text-background-dark text-base font-bold leading-normal tracking-wide shadow-lg shadow-primary/10 active:scale-[0.98] transition-all hover:brightness-110">
+                            <span class="truncate">登録を完了してはじめる</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <p class="text-center text-xs text-gray-400 dark:text-[#90c1cb]/40">
+                登録することで、利用規約に同意したものとみなされます。
+            </p>
+        </div>
+
+        <!-- Background Decoration -->
+        <div class="fixed -bottom-24 -left-24 h-64 w-64 rounded-full bg-primary/10 blur-[100px] pointer-events-none">
+        </div>
+        <div class="fixed -top-24 -right-24 h-64 w-64 rounded-full bg-primary/5 blur-[80px] pointer-events-none"></div>
+    </div>
+</body>
+
+</html>
