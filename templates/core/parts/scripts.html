@@ -2,7 +2,7 @@
   const tabSections = document.querySelectorAll(".tab-section");
   const navButtons = document.querySelectorAll(".nav-btn");
 
-  function setTab(tab, push=true) {
+  function setTab(tab, push = true) {
     tabSections.forEach(s => s.classList.add("hidden"));
 
     // 1) まず tab-{tab} を探す（例: tab-profile_edit）
@@ -43,10 +43,10 @@
   const postModal = document.getElementById("postModal");
   const postModalBody = document.getElementById("postModalBody");
 
-function buildModalSliderHtml(urls) {
-  if (!urls || urls.length === 0) return "";
+  function buildModalSliderHtml(urls) {
+    if (!urls || urls.length === 0) return "";
 
-  const slides = urls.map(src => `
+    const slides = urls.map(src => `
     <button type="button" class="flex-none basis-full snap-start" data-src="${src}">
       <div class="relative w-full aspect-[4/5]">
         <img class="absolute inset-0 w-full h-full object-cover" src="${src}" alt="post image" loading="lazy">
@@ -54,7 +54,7 @@ function buildModalSliderHtml(urls) {
     </button>
   `).join("");
 
-  const nav = (urls.length > 1) ? `
+    const nav = (urls.length > 1) ? `
     <button type="button"
       class="js-prev absolute left-2 top-1/2 -translate-y-1/2 z-10 md:flex
             items-center justify-center w-10 h-10 rounded-full
@@ -73,7 +73,7 @@ function buildModalSliderHtml(urls) {
     </button>
   ` : "";
 
-  return `
+    return `
     <div class="pt-2 mb-3">
       <div class="relative group z-10">
         <div class="js-slider flex overflow-x-auto scroll-smooth snap-x snap-proximity
@@ -86,7 +86,7 @@ function buildModalSliderHtml(urls) {
       </div>
     </div>
   `;
-}
+  }
 
   function openPostModal(postId) {
     postModalBody.textContent = "読み込み中...";
@@ -140,99 +140,124 @@ function buildModalSliderHtml(urls) {
     alert("保存（favorite）はまだ未実装です: " + postId);
   }
 
-  // --- 画像アップロード：選択したらプレビュー表示 ---
+  // --- 画像アップロード：選択したらプレビュー表示（複数枚対応） ---
   (function () {
     const input = document.getElementById("imageInput");
     const preview = document.getElementById("imagePreview");
-    if (!input || !preview) return; // createタブ以外なら何もしない
+    const prompt = document.getElementById("uploadPrompt");
+    const thumbs = document.getElementById("thumbs");
+    if (!input || !preview || !thumbs || !prompt) return;
 
     input.addEventListener("change", () => {
-      const file = input.files && input.files[0];
-      if (!file) {
+      const files = Array.from(input.files || []);
+      thumbs.innerHTML = ""; // クリア
+
+      if (files.length === 0) {
         preview.src = "";
         preview.classList.add("hidden");
+        prompt.classList.remove("hidden");
+        thumbs.classList.add("hidden");
         return;
       }
 
-      // 5MBチェック（UIの文言と合わせる）
+      // エラーチェック（5MB）
       const maxBytes = 5 * 1024 * 1024;
-      if (file.size > maxBytes) {
-        alert("画像が大きすぎます（最大5MB）");
+      const oversized = files.some(f => f.size > maxBytes);
+      if (oversized) {
+        alert("5MBを超える画像が含まれています。");
         input.value = "";
-        preview.src = "";
         preview.classList.add("hidden");
+        prompt.classList.remove("hidden");
+        thumbs.classList.add("hidden");
         return;
       }
 
-      const url = URL.createObjectURL(file);
-      preview.src = url;
+      // メインプレビュー（最初の1枚）
+      preview.src = URL.createObjectURL(files[0]);
       preview.classList.remove("hidden");
+      prompt.classList.add("hidden");
+
+      // サムネイル一覧
+      if (files.length > 1) {
+        thumbs.classList.remove("hidden");
+        files.forEach(file => {
+          const div = document.createElement("div");
+          div.className = "shrink-0 w-16 aspect-square rounded-lg overflow-hidden border border-white/30";
+          const img = document.createElement("img");
+          img.src = URL.createObjectURL(file);
+          img.className = "w-full h-full object-cover";
+          div.appendChild(img);
+          thumbs.appendChild(div);
+        });
+      } else {
+        thumbs.classList.add("hidden");
+      }
     });
   })();
 
-  
-    function openConversation(id) { alert("会話: " + id); }
-    window.addEventListener("DOMContentLoaded", () => {
-      document.querySelectorAll(".js-slider").forEach((slider) => {
-        const wrapper = slider.closest(".group") || slider.parentElement;
-        const prev = wrapper?.querySelector(".js-prev");
-        const next = wrapper?.querySelector(".js-next");
-        if (!prev || !next) return;
 
-        const items = Array.from(slider.children); // ← slider直下のbuttonたち
-        const n = items.length;
-        if (n <= 1) return;
+  function openConversation(id) { alert("会話: " + id); }
+  window.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll(".js-slider").forEach((slider) => {
+      const wrapper = slider.closest(".group") || slider.parentElement;
+      const prev = wrapper?.querySelector(".js-prev");
+      const next = wrapper?.querySelector(".js-next");
+      if (!prev || !next) return;
 
-        let index = 0;
+      const items = Array.from(slider.children); // ← slider直下のbuttonたち
+      const n = items.length;
+      if (n <= 1) return;
 
-        const maxLeft = () => Math.max(0, slider.scrollWidth - slider.clientWidth);
+      let index = 0;
 
-        const syncIndex = () => {
-          // 現在のscrollLeftに一番近いoffsetLeftをindexとして採用（ズレ補正）
-          const x = slider.scrollLeft;
-          let best = 0, bestDist = Infinity;
-          for (let i = 0; i < n; i++) {
-            const d = Math.abs(items[i].offsetLeft - x);
-            if (d < bestDist) { bestDist = d; best = i; }
-          }
-          index = best;
-        };
+      const maxLeft = () => Math.max(0, slider.scrollWidth - slider.clientWidth);
 
-        const go = (to) => {
-          index = Math.max(0, Math.min(n - 1, to));
+      const syncIndex = () => {
+        // 現在のscrollLeftに一番近いoffsetLeftをindexとして採用（ズレ補正）
+        const x = slider.scrollLeft;
+        let best = 0, bestDist = Infinity;
+        for (let i = 0; i < n; i++) {
+          const d = Math.abs(items[i].offsetLeft - x);
+          if (d < bestDist) { bestDist = d; best = i; }
+        }
+        index = best;
+      };
 
-          // 目標位置：基本は対象要素のoffsetLeft
-          let left = items[index].offsetLeft;
+      const go = (to) => {
+        index = Math.max(0, Math.min(n - 1, to));
 
-          // 最後の要素はstartに揃えられないことがあるので maxScrollLeft に吸い付ける
-          if (index === n - 1) left = maxLeft();
+        // 目標位置：基本は対象要素のoffsetLeft
+        let left = items[index].offsetLeft;
 
-          // 念のためクランプ
-          left = Math.max(0, Math.min(maxLeft(), left));
+        // 最後の要素はstartに揃えられないことがあるので maxScrollLeft に吸い付ける
+        if (index === n - 1) left = maxLeft();
 
-          slider.scrollTo({ left, behavior: "smooth" });
-        };
+        // 念のためクランプ
+        left = Math.max(0, Math.min(maxLeft(), left));
 
-        // ユーザーがスワイプした時もindexを追従
-        slider.addEventListener("scroll", () => {
-          // scroll中に更新しすぎない（軽量に）
-          window.clearTimeout(slider.__t);
-          slider.__t = window.setTimeout(syncIndex, 80);
-        }, { passive: true });
+        slider.scrollTo({ left, behavior: "smooth" });
+      };
 
-        prev.addEventListener("click", (e) => {
-          e.preventDefault(); e.stopPropagation();
-          syncIndex();
-          go(index - 1);
-        });
+      // ユーザーがスワイプした時もindexを追従
+      slider.addEventListener("scroll", () => {
+        // scroll中に更新しすぎない（軽量に）
+        window.clearTimeout(slider.__t);
+        slider.__t = window.setTimeout(syncIndex, 80);
+      }, { passive: true });
 
-        next.addEventListener("click", (e) => {
-          e.preventDefault(); e.stopPropagation();
-          syncIndex();
-          go(index + 1);
-        });
+      prev.addEventListener("click", (e) => {
+        e.preventDefault(); e.stopPropagation();
+        syncIndex();
+        go(index - 1);
+      });
+
+      next.addEventListener("click", (e) => {
+        e.preventDefault(); e.stopPropagation();
+        syncIndex();
+        go(index + 1);
       });
     });
+  });
 
 </script>
 
@@ -277,12 +302,11 @@ function buildModalSliderHtml(urls) {
 </script>
 
 <script>
-function openCircleProfile(profileId){
-  location.href = '/?tab=profile&circle_id=${circleId}';
-  const url = new URL(window.location.href);
-  url.searchParams.set("tab", "profile");
-  url.searchParams.set("profile_id", profileId);
-  window.location.href = url.toString();
-}
+  function openCircleProfile(profileId) {
+    location.href = '/?tab=profile&circle_id=${circleId}';
+    const url = new URL(window.location.href);
+    url.searchParams.set("tab", "profile");
+    url.searchParams.set("profile_id", profileId);
+    window.location.href = url.toString();
+  }
 </script>
-
