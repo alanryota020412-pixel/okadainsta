@@ -1,13 +1,16 @@
+from django.contrib.auth import login 
+from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count
-from django.http import JsonResponse, HttpResponseBadRequest
+from django.db.models import Q
+from django.http import JsonResponse, HttpResponseBadRequest, HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 from django.utils.dateparse import parse_datetime
 from django.views.decorators.csrf import csrf_exempt
 
-from .forms import CircleForm, ProfileForm
+from .forms import CircleForm, PostCreateForm, ProfileForm
 from .models import (
     Circle,
     Conversation,
@@ -23,11 +26,12 @@ from .models import (
 )
 
 
-# =========================
+# -------------------------
 # App（単一画面）
-# =========================
+# -------------------------
 def app(request):
     tab = request.GET.get("tab") or "home"
+
     allowed_tabs = {"home", "search", "create", "messages", "profile", "profile_edit"}
     if tab not in allowed_tabs:
         tab = "home"
@@ -53,44 +57,47 @@ def app(request):
 
     posts = list(posts_qs[:50])
 
-    # ---------------- SEARCH ----------------
     search_query = (request.GET.get("q", "") or "").strip()
     category = request.GET.get("category", "")
     tag = request.GET.get("tag", "")
     only_open = request.GET.get("open") == "1"
 
-    search_results = (
-        Post.objects.all()
-        .prefetch_related("tags")
-        .annotate(
-            favs_count=Count("favorites", distinct=True),
-            views_count=Count("views", distinct=True),
-        )
-    )
-
-    if search_query:
+    if any([search_query, category, tag, only_open]):
         search_results = (
-            search_results.filter(title__icontains=search_query)
-            | search_results.filter(circle_name__icontains=search_query)
-            | search_results.filter(place__icontains=search_query)
+            Post.objects.all()
+            .prefetch_related("tags")
+            .annotate(
+                favs_count=Count("favorites", distinct=True),
+                views_count=Count("views", distinct=True),
+            )
         )
 
-    if category:
-        search_results = search_results.filter(category=category)
+        if search_query:
+            search_results = (
+                search_results.filter(title__icontains=search_query)
+                | search_results.filter(circle_name__icontains=search_query)
+                | search_results.filter(place__icontains=search_query)
+            )
 
-    if tag:
-        search_results = search_results.filter(tags__name=tag)
+        if category:
+            search_results = search_results.filter(category=category)
 
-    if only_open:
-        now = timezone.now()
-        search_results = search_results.filter(event_at__gte=now).exclude(status="closed")
+        if tag:
+            search_results = search_results.filter(tags__name=tag)
 
-    search_results = search_results.order_by("-event_at", "-created_at")[:50]
+        if only_open:
+            now = timezone.now()
+            search_results = search_results.filter(event_at__gte=now).exclude(status="closed")
+
+        search_results = search_results.order_by("-event_at", "-created_at")[:50]
+    else:
+        search_results = Post.objects.none()
 
     circle_results = Circle.objects.none()
     if search_query:
         circle_results = (
-            Circle.objects.filter(name__icontains=search_query)
+            Circle.objects
+            .filter(name__icontains=search_query)
             .exclude(name="")
             .order_by("name")[:50]
         )
@@ -124,12 +131,18 @@ def app(request):
                 profile_form = ProfileForm(request.POST, request.FILES, instance=profile)
                 if profile_form.is_valid():
                     profile_form.save()
+                    Notification.objects.create(
+                        user=request.user,
+                        notif_type="participation",
+                        text="プロフィールを更新しました",
+                        url="/?tab=profile",
+                    )
                     return redirect("/?tab=profile")
             else:
                 profile_form = ProfileForm(instance=profile)
 
     if tab == "profile_edit" and not request.user.is_authenticated:
-        return redirect("account_login")
+        return redirect("login")
 
     ctx = {
         "initial_tab": tab,
@@ -148,45 +161,48 @@ def app(request):
         "conversations": conversations,
         "profile_form": profile_form,
     }
+
     return render(request, "core/app.html", ctx)
 
 
-# =========================
+# -------------------------
 # Post Detail JSON
-# =========================
+# -------------------------
 def post_detail_json(request, pk):
     p = get_object_or_404(
         Post.objects.prefetch_related("tags", "images").select_related("author"),
-        pk=pk,
+        pk=pk
     )
 
     seen = request.session.get("seen_posts", [])
     if pk not in seen:
         PostView.objects.create(
             post=p,
-            user=request.user if request.user.is_authenticated else None,
+            user=request.user if request.user.is_authenticated else None
         )
         seen.append(pk)
         request.session["seen_posts"] = seen
 
-    return JsonResponse(
-        {
-            "id": p.id,
-            "title": p.title,
-            "circle_name": p.circle_name,
-            "place": p.place,
-            "detail": p.detail,
-            "event_at": p.event_at.strftime("%Y/%m/%d %H:%M") if p.event_at else "",
-            "tags": [t.name for t in p.tags.all()],
-            "image_urls": [im.image.url for im in p.images.all()],
-            "image_url": p.image.url if getattr(p, "image", None) else None,
-        }
-    )
+    data = {
+        "id": p.id,
+        "title": p.title,
+        "circle_name": p.circle_name,
+        "place": p.place,
+        "detail": p.detail,
+        "event_at": p.event_at.strftime("%Y/%m/%d %H:%M") if p.event_at else "",
+        "status": p.effective_status,
+        "category": p.category,
+        "tags": [t.name for t in p.tags.all()],
+        "image_urls": [im.image.url for im in p.images.all()],
+        "image_url": p.image.url if getattr(p, "image", None) else None,
+    }
+
+    return JsonResponse(data)
 
 
-# =========================
+# -------------------------
 # Post Create（複数画像対応）
-# =========================
+# -------------------------
 @login_required
 @csrf_exempt
 def post_create(request):
@@ -235,9 +251,9 @@ def post_create(request):
     return render(request, "core/app.html", {"initial_tab": "create"})
 
 
-# =========================
-# Favorite Toggle
-# =========================
+# -------------------------
+# Favorite toggle
+# -------------------------
 @login_required
 @require_POST
 def toggle_favorite(request, pk):
@@ -253,3 +269,95 @@ def toggle_favorite(request, pk):
 
     favs_count = Favorite.objects.filter(post=p).count()
     return JsonResponse({"ok": True, "is_fav": is_fav, "favs_count": favs_count})
+
+
+# -------------------------
+# Profile save（復活）
+# -------------------------
+@login_required
+@require_POST
+def profile_save(request):
+    circle, _ = Circle.objects.get_or_create(owner=request.user)
+    form = CircleForm(request.POST, request.FILES, instance=circle)
+
+    if form.is_valid():
+        form.save()
+        return redirect("/?tab=profile")
+
+    return render(
+        request,
+        "core/app.html",
+        {
+            "initial_tab": "profile",
+            "circle": circle,
+            "circle_form": form,
+        }
+    )
+
+
+# -------------------------
+# Signup（削除していません）
+# -------------------------
+def signup(request):
+    if request.method == "POST":
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect("core:app")
+    else:
+        form = UserCreationForm()
+
+    return render(request, "registration/signup.html", {"form": form})
+
+
+# -------------------------
+# Profile detail JSON
+# -------------------------
+def profile_detail_json(request, pk):
+    """
+    JSの openCircleProfile(profileId) から呼ばれる想定
+    """
+    profile = get_object_or_404(Profile, pk=pk)
+    return JsonResponse({
+        "ok": True,
+        "profile": {
+            "circle_name": profile.circle_name,
+            "bio": profile.bio,
+            "place": profile.place,
+            "frequency": profile.frequency,
+            "x_url": profile.x_url,
+            "instagram_url": profile.instagram_url,
+        }
+    })
+
+
+# -------------------------
+# Messages (Stubs)
+# -------------------------
+@login_required
+def start_conversation(request, post_id):
+    return JsonResponse({"ok": False, "error": "Not implemented"})
+
+
+@login_required
+def conversation_json(request, convo_id):
+    return JsonResponse({"ok": False, "error": "Not implemented"})
+
+
+@login_required
+def send_message(request, convo_id):
+    return JsonResponse({"ok": False, "error": "Not implemented"})
+
+
+# -------------------------
+# Notifications (Stubs)
+# -------------------------
+@login_required
+def notifications_json(request):
+    return JsonResponse({"ok": True, "notifications": []})
+
+
+@login_required
+def notifications_mark_read(request):
+    return JsonResponse({"ok": True})
