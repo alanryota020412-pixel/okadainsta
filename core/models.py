@@ -84,6 +84,27 @@ class Post(models.Model):
 
     def __str__(self):
         return self.title
+    
+    def save(self, *args, **kwargs):
+        if not (self.circle_name or "").strip():
+            name = ""
+
+            # 1) Profile.display_name 優先
+            if self.author_id and hasattr(self.author, "profile"):
+                name = (self.author.profile.display_name or "").strip()
+
+            # 2) ダメなら Circle.name
+            if not name and self.author_id and hasattr(self.author, "circle"):
+                name = (self.author.circle.name or "").strip()
+
+            # 3) それもダメなら username
+            if not name and self.author_id:
+                name = (self.author.username or "").strip()
+
+            if name:
+                self.circle_name = name
+
+        super().save(*args, **kwargs)
 
 
 class Favorite(models.Model):
@@ -166,3 +187,31 @@ class PostView(models.Model):
 
     class Meta:
         indexes = [models.Index(fields=["post", "viewed_at"])]
+
+# プロフィールとサークルのDB作成機能
+
+from django.contrib.auth import get_user_model
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
+UserModel = get_user_model()
+
+@receiver(post_save, sender=UserModel)
+def create_profile_and_circle(sender, instance, created, **kwargs):
+    if not created:
+        return
+
+    # Profileを作って display_name を初期化（username から仮置き）
+    p, _ = Profile.objects.get_or_create(user=instance)
+    if not (p.display_name or "").strip():
+        p.display_name = instance.username  # ← emailログインならここ変える
+        p.save()
+
+    # Circleも必要なら作る（ただし投稿の補完はProfile基準にしたので必須ではない）
+    Circle.objects.get_or_create(owner=instance)
+
+class PostImage(models.Model):
+    post = models.ForeignKey("Post", on_delete=models.CASCADE, related_name="images")
+    image = models.ImageField(upload_to="posts/")
+    created_at = models.DateTimeField(auto_now_add=True)
+
