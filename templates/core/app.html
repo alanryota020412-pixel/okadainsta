@@ -46,6 +46,26 @@
   </style>
 </head>
 
+<div id="circleModal" class="fixed inset-0 z-50 hidden">
+  <div class="absolute inset-0 bg-black/60" onclick="closeCircleModal()"></div>
+
+  <div class="absolute left-1/2 top-1/2 w-[92%] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-2xl bg-[#0f1f22] border border-slate-700/40 p-4">
+    <div class="flex items-center justify-between">
+      <div class="text-lg font-bold text-white" id="circleModalTitle">サークル</div>
+      <button type="button" onclick="closeCircleModal()" class="text-slate-300">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+
+    <div class="mt-3 space-y-3 text-slate-100">
+      <div id="circleModalBody" class="text-sm leading-relaxed"></div>
+
+      <div id="circleModalLinks" class="space-y-2 text-sm"></div>
+    </div>
+  </div>
+</div>
+
+
 <body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white font-display">
   <div class="relative flex min-h-screen w-full flex-col max-w-md mx-auto shadow-2xl bg-background-light dark:bg-background-dark">
 
@@ -59,6 +79,7 @@
       {% include "core/parts/tab_messages.html" %}
       {% include "core/parts/tab_create.html" %}
       {% include "core/parts/tab_profile.html" %}
+      {% include "core/parts/tab_profile_edit.html" %}
 
     </main>
 

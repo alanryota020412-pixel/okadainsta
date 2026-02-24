@@ -21,6 +21,8 @@ urlpatterns = [
 
     # ===== Profile / Circle 保存 =====
     path("profile/save/", views.profile_save, name="profile_save"),
+    path("api/profiles/<int:pk>/", views.profile_detail_json, name="profile_detail_json"),
+
 
     # ===== Messages =====
     path("posts/<int:post_id>/dm/start/", views.start_conversation, name="start_conversation"),

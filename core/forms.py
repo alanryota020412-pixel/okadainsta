@@ -4,7 +4,13 @@ from .models import Profile, Circle, Post
 class ProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
-        fields = ["display_name", "school_year", "role", "bio", "avatar"]
+        fields = ["avatar",
+                  "circle_name",
+                  "description",
+                  "place",
+                  "frequency",
+                  "x_url",
+                  "instagram_url",]
         widgets = {
             "bio": forms.Textarea(attrs={"rows": 4}),
         }
@@ -12,7 +18,7 @@ class ProfileForm(forms.ModelForm):
 class CircleForm(forms.ModelForm):
     class Meta:
         model = Circle
-        fields = ["name", "activity_days", "members_count", "sns_link", "description"]
+        fields = ["avatar", "name", "bio", "place", "frequency", "x_url", "instagram_url"]
         widgets = {
             "description": forms.Textarea(attrs={"rows": 4}),
         }
