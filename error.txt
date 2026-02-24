@@ -1,0 +1,263 @@
+﻿.venv\Scripts\python.e
+xe : Traceback (most r
+ecent call last):
+発生場所 行:1 文字:1
++ .venv\Scripts\python
+.exe manage.py check 2
+>&1 | Out-File -FilePa
+th er ...
++ ~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~
+~~~
+    + CategoryInfo    
+          : NotSpeci  
+  fied: (Traceback    
+ (most recent call    
+ last)::String) [    ]
+, RemoteExceptio    n
+    + FullyQualifiedE 
+   rrorId : NativeCo  
+  mmandError
+ 
+  File "C:\透過村塾\okadai
+nsta\manage.py", line 
+22, in <module>
+    main()
+  File "C:\透過村塾\okadai
+nsta\manage.py", line 
+18, in main
+    execute_from_comma
+nd_line(sys.argv)
+  File "C:\透過村塾\okadai
+nsta\.venv\Lib\site-pa
+ckages\django\core\man
+agement\__init__.py", 
+line 442, in execute_f
+rom_command_line
+    utility.execute()
+  File "C:\透過村塾\okadai
+nsta\.venv\Lib\site-pa
+ckages\django\core\man
+agement\__init__.py", 
+line 436, in execute
+    self.fetch_command
+(subcommand).run_from_
+argv(self.argv)
+  File "C:\透過村塾\okadai
+nsta\.venv\Lib\site-pa
+ckages\django\core\man
+agement\base.py", line
+ 420, in run_from_argv
+    self.execute(*args
+, **cmd_options)
+  File "C:\透過村塾\okadai
+nsta\.venv\Lib\site-pa
+ckages\django\core\man
+agement\base.py", line
+ 464, in execute
+    output = self.hand
+le(*args, **options)
+             ^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^
+  File "C:\透過村塾\okadai
+nsta\.venv\Lib\site-pa
+ckages\django\core\man
+agement\commands\check
+.py", line 81, in hand
+le
+    self.check(
+  File "C:\透過村塾\okadai
+nsta\.venv\Lib\site-pa
+ckages\django\core\man
+agement\base.py", line
+ 496, in check
+    all_issues = check
+s.run_checks(
+                 ^^^^^
+^^^^^^^^^^^^^
+  File "C:\透過村塾\okadai
+nsta\.venv\Lib\site-pa
+ckages\django\core\che
+cks\registry.py", line
+ 89, in run_checks
+    new_errors = check
+(app_configs=app_confi
+gs, databases=database
+s)
+                 ^^^^^
+^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^
+^^
+  File "C:\透過村塾\okadai
+nsta\.venv\Lib\site-pa
+ckages\django\core\che
+cks\urls.py", line 16,
+ in check_url_config
+    return check_resol
+ver(resolver)
+           ^^^^^^^^^^^
+^^^^^^^^^^^^^
+  File "C:\透過村塾\okadai
+nsta\.venv\Lib\site-pa
+ckages\django\core\che
+cks\urls.py", line 26,
+ in check_resolver
+    return check_metho
+d()
+           ^^^^^^^^^^^
+^^^
+  File "C:\透過村塾\okadai
+nsta\.venv\Lib\site-pa
+ckages\django\urls\res
+olvers.py", line 531, 
+in check
+    for pattern in sel
+f.url_patterns:
+                   ^^^
+^^^^^^^^^^^^^^
+  File "C:\透過村塾\okadai
+nsta\.venv\Lib\site-pa
+ckages\django\utils\fu
+nctional.py", line 47,
+ in __get__
+    res = instance.__d
+ict__[self.name] = sel
+f.func(instance)
+                      
+                   ^^^
+^^^^^^^^^^^^^^^^
+  File "C:\透過村塾\okadai
+nsta\.venv\Lib\site-pa
+ckages\django\urls\res
+olvers.py", line 718, 
+in url_patterns
+    patterns = getattr
+(self.urlconf_module, 
+"urlpatterns", self.ur
+lconf_module)
+                      
+ ^^^^^^^^^^^^^^^^^^^
+  File "C:\透過村塾\okadai
+nsta\.venv\Lib\site-pa
+ckages\django\utils\fu
+nctional.py", line 47,
+ in __get__
+    res = instance.__d
+ict__[self.name] = sel
+f.func(instance)
+                      
+                   ^^^
+^^^^^^^^^^^^^^^^
+  File "C:\透過村塾\okadai
+nsta\.venv\Lib\site-pa
+ckages\django\urls\res
+olvers.py", line 711, 
+in urlconf_module
+    return import_modu
+le(self.urlconf_name)
+           ^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\hamar
+\.pyenv\pyenv-win\vers
+ions\3.11.5\Lib\import
+lib\__init__.py", line
+ 126, in import_module
+    return _bootstrap.
+_gcd_import(name[level
+:], package, level)
+           ^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^
+  File "<frozen import
+lib._bootstrap>", line
+ 1204, in _gcd_import
+  File "<frozen import
+lib._bootstrap>", line
+ 1176, in _find_and_lo
+ad
+  File "<frozen import
+lib._bootstrap>", line
+ 1147, in _find_and_lo
+ad_unlocked
+  File "<frozen import
+lib._bootstrap>", line
+ 690, in _load_unlocke
+d
+  File "<frozen import
+lib._bootstrap_externa
+l>", line 940, in exec
+_module
+  File "<frozen import
+lib._bootstrap>", line
+ 241, in _call_with_fr
+ames_removed
+  File "C:\透過村塾\okadai
+nsta\config\urls.py", 
+line 23, in <module>
+    path("", include((
+"core.urls", "core"), 
+namespace="core")),
+             ^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^
+  File "C:\透過村塾\okadai
+nsta\.venv\Lib\site-pa
+ckages\django\urls\con
+f.py", line 39, in inc
+lude
+    urlconf_module = i
+mport_module(urlconf_m
+odule)
+                     ^
+^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^
+  File "C:\Users\hamar
+\.pyenv\pyenv-win\vers
+ions\3.11.5\Lib\import
+lib\__init__.py", line
+ 126, in import_module
+    return _bootstrap.
+_gcd_import(name[level
+:], package, level)
+           ^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^
+  File "<frozen import
+lib._bootstrap>", line
+ 1204, in _gcd_import
+  File "<frozen import
+lib._bootstrap>", line
+ 1176, in _find_and_lo
+ad
+  File "<frozen import
+lib._bootstrap>", line
+ 1147, in _find_and_lo
+ad_unlocked
+  File "<frozen import
+lib._bootstrap>", line
+ 690, in _load_unlocke
+d
+  File "<frozen import
+lib._bootstrap_externa
+l>", line 940, in exec
+_module
+  File "<frozen import
+lib._bootstrap>", line
+ 241, in _call_with_fr
+ames_removed
+  File "C:\透過村塾\okadai
+nsta\core\urls.py", li
+ne 24, in <module>
+    path("api/profiles
+/<int:pk>/", views.pro
+file_detail_json, name
+="profile_detail_json"
+),
+                      
+             ^^^^^^^^^
+^^^^^^^^^^^^^^^^
+AttributeError: module
+ 'core.views' has no a
+ttribute 'profile_deta
+il_json'. Did you mean
+: 'post_detail_json'?

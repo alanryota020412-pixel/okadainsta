@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0002_conversation_post_post_category_alter_circle_name'),
+        ('core', '0001_initial'),
     ]
 
     operations = [
