@@ -18,7 +18,7 @@ class ProfileForm(forms.ModelForm):
 class CircleForm(forms.ModelForm):
     class Meta:
         model = Circle
-        fields = ["avatar", "name", "bio", "place", "frequency", "x_url", "instagram_url"]
+        fields = ["avatar", "name", "bio", "place", "frequency", "x_url", "instagram_url", "cover_image",]
         widgets = {
             "description": forms.Textarea(attrs={"rows": 4}),
         }
@@ -52,3 +52,12 @@ class PostCreateForm(forms.ModelForm):
                 seen.add(x)
                 out.append(x)
         return out
+
+class CircleEditForm(forms.ModelForm):
+    class Meta:
+        model = Circle
+        fields = ["name", "description", "icon_image", "cover_image"]
+        widgets = {
+            "icon_image": forms.ClearableFileInput(attrs={"accept": "image/*"}),
+            "cover_image": forms.ClearableFileInput(attrs={"accept": "image/*"}),
+        }

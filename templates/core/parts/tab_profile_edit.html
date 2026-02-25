@@ -7,12 +7,12 @@
         <span class="material-symbols-outlined text-2xl">close</span>
       </a>
 
-      <h2 class="text-slate-800 dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center">
+      <h2 class="text-slate-800 dark:text-white text-lg font-bold text-center flex-1">
         サークルプロフィール編集
       </h2>
 
       <div class="flex w-12 items-center justify-end">
-        <button type="submit" form="profileEditForm" class="text-primary text-base font-bold leading-normal">
+        <button type="submit" form="profileEditForm" class="text-primary text-base font-bold">
           保存
         </button>
       </div>
@@ -26,38 +26,73 @@
           action="{% url 'core:profile_save' %}">
       {% csrf_token %}
 
-      <!-- エラー表示（CircleForm優先 / ProfileFormも出したいなら追記） -->
+      <!-- フォーム全体エラー（任意） -->
       {% if circle_form and circle_form.errors %}
         <div class="rounded-xl border border-red-300/40 bg-red-500/10 p-3 text-sm text-red-200">
           入力内容を確認してください。
         </div>
       {% endif %}
 
-      <!-- Avatar -->
+      <!-- Cover + Avatar -->
       <div class="flex flex-col items-center gap-4">
-        <div class="relative">
-          <label for="id_avatar" class="cursor-pointer">
-            <div
-              class="bg-center bg-no-repeat aspect-square bg-cover rounded-full min-h-32 w-32 border-4 border-primary/20 shadow-lg"
-              style="
-                background-image:
-                  url('{% if circle and circle.avatar %}{{ circle.avatar.url }}{% else %}https://lh3.googleusercontent.com/aida-public/AB6AXuDX3BSChoEd6dFPNIPsZtRHsi6E5CRx_luZK-rElSQjOYjXHAC4-zoM9X_0ET483K49iok6MGa_tQjvijWLQR6dtnsOiTaYHDuGE63uj5qAetjt8kx78BTnCcFuYSHUnne2dZKC0a38hNm42YcesV785vIZ0s0qRY_5KS_5y5dPMxeA-Tmq-qRtDFEeC6kWqYl_oP4vnK2EZktpUe3QCRAk1GC5HazWdzNaFybgXW7_RkaBlpwlbcYYcMOMi3U_UKoJwknxEsRrrkk{% endif %}');
-              ">
-              <div class="absolute inset-0 bg-black/30 rounded-full flex items-center justify-center">
-                <span class="material-symbols-outlined text-white text-3xl">photo_camera</span>
+
+        <!-- Cover -->
+        <div class="relative w-full">
+          <label for="id_cover_image" class="cursor-pointer block">
+            <div class="relative h-44 w-full overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800">
+              {% if circle and circle.cover_image %}
+                <img
+                  id="coverPreview"
+                  src="{{ circle.cover_image.url }}"
+                  class="h-full w-full object-cover"
+                  alt="cover"
+                />
+              {% else %}
+                <div id="coverPreview" class="h-full w-full bg-background-light/60 dark:bg-background-dark/60"></div>
+              {% endif %}
+
+              <div class="absolute inset-0 bg-black/20"></div>
+
+              <div class="absolute bottom-3 right-3 flex items-center gap-2 rounded-xl bg-black/40 px-3 py-2">
+                <span class="material-symbols-outlined text-white text-xl">photo_camera</span>
+                <span class="text-white text-xs font-bold">背景を変更</span>
               </div>
             </div>
           </label>
+
+          <!-- ✅ CircleForm のフィールド名と一致させる -->
+          <input id="id_cover_image" name="cover_image" type="file" accept="image/*" class="hidden">
+
+          {% if circle_form and circle_form.cover_image and circle_form.cover_image.errors %}
+            <p class="mt-2 text-xs text-red-300">{{ circle_form.cover_image.errors|striptags }}</p>
+          {% endif %}
+
+          <!-- Avatar -->
+          <div class="absolute left-1/2 -bottom-12 -translate-x-1/2">
+            <label for="id_avatar" class="cursor-pointer">
+              <div
+                id="avatarPreview"
+                class="relative bg-center bg-no-repeat bg-cover rounded-full h-28 w-28 border-4 border-primary/20 shadow-lg"
+                style="background-image:
+                url('{% if circle and circle.avatar %}{{ circle.avatar.url }}{% else %}https://via.placeholder.com/150{% endif %}');">
+                <div class="absolute inset-0 bg-black/30 rounded-full flex items-center justify-center">
+                  <span class="material-symbols-outlined text-white text-3xl">photo_camera</span>
+                </div>
+              </div>
+            </label>
+
+            <!-- ✅ CircleForm のフィールド名と一致させる -->
+            <input id="id_avatar" name="avatar" type="file" accept="image/*" class="hidden">
+          </div>
         </div>
 
-        <!-- CircleFormのフィールド名に合わせる -->
-        <input id="id_avatar" name="avatar" type="file" accept="image/*" class="hidden">
+        <div class="h-12"></div>
 
         <label for="id_avatar" class="text-primary text-sm font-bold cursor-pointer">
           サークル画像を変更
         </label>
 
-        {% if circle_form and circle_form.avatar.errors %}
+        {% if circle_form and circle_form.avatar and circle_form.avatar.errors %}
           <p class="text-xs text-red-300">{{ circle_form.avatar.errors|striptags }}</p>
         {% endif %}
       </div>
@@ -65,58 +100,43 @@
       <!-- Fields -->
       <div class="flex flex-col gap-4">
 
-        <!-- サークル名：circle.name -->
         <div class="flex flex-col gap-2">
           <label class="text-sm font-bold text-slate-700 dark:text-[#90c1cb] ml-1">サークル名</label>
-          <input
-            name="name"
-            type="text"
-            value="{{ circle.name|default_if_none:'' }}"
-            class="w-full bg-white dark:bg-[#1a2e32] border border-slate-200 dark:border-[#315f68] rounded-xl px-4 py-3 focus:border-primary focus:ring-1 focus:ring-primary outline-none text-slate-900 dark:text-white"
-            placeholder="例：テニスクラブ"
-          />
-          {% if circle_form and circle_form.name.errors %}
+          <input name="name" type="text"
+                 value="{{ circle.name|default_if_none:'' }}"
+                 class="w-full bg-white dark:bg-[#1a2e32] border border-slate-200 dark:border-[#315f68] rounded-xl px-4 py-3 focus:border-primary focus:ring-1 focus:ring-primary outline-none text-slate-900 dark:text-white"
+                 placeholder="例：テニスクラブ" />
+          {% if circle_form and circle_form.name and circle_form.name.errors %}
             <p class="text-xs text-red-300">{{ circle_form.name.errors|striptags }}</p>
           {% endif %}
         </div>
 
-        <!-- 活動内容：circle.bio -->
         <div class="flex flex-col gap-2">
           <label class="text-sm font-bold text-slate-700 dark:text-[#90c1cb] ml-1">活動内容</label>
-          <textarea
-            name="bio"
-            rows="4"
-            class="w-full bg-white dark:bg-[#1a2e32] border border-slate-200 dark:border-[#315f68] rounded-xl px-4 py-3 focus:border-primary focus:ring-1 focus:ring-primary outline-none text-slate-900 dark:text-white resize-none"
-            placeholder="例：初心者歓迎！週2回で活動しています。"
-          >{{ circle.bio|default_if_none:'' }}</textarea>
-          {% if circle_form and circle_form.bio.errors %}
+          <textarea name="bio" rows="4"
+                    class="w-full bg-white dark:bg-[#1a2e32] border border-slate-200 dark:border-[#315f68] rounded-xl px-4 py-3 focus:border-primary focus:ring-1 focus:ring-primary outline-none text-slate-900 dark:text-white resize-none"
+                    placeholder="例：初心者歓迎！週2回で活動しています。">{{ circle.bio|default_if_none:'' }}</textarea>
+          {% if circle_form and circle_form.bio and circle_form.bio.errors %}
             <p class="text-xs text-red-300">{{ circle_form.bio.errors|striptags }}</p>
           {% endif %}
         </div>
 
-        <!-- 場所 / 頻度 -->
         <div class="grid grid-cols-2 gap-4">
           <div class="flex flex-col gap-2">
             <label class="text-sm font-bold text-slate-700 dark:text-[#90c1cb] ml-1">活動場所</label>
-            <input
-              name="place"
-              type="text"
-              value="{{ circle.place|default_if_none:'' }}"
-              class="w-full bg-white dark:bg-[#1a2e32] border border-slate-200 dark:border-[#315f68] rounded-xl px-4 py-3 focus:border-primary focus:ring-1 focus:ring-primary outline-none text-slate-900 dark:text-white"
-              placeholder="例：第1テニスコート"
-            />
-            {% if circle_form and circle_form.place.errors %}
+            <input name="place" type="text"
+                   value="{{ circle.place|default_if_none:'' }}"
+                   class="w-full bg-white dark:bg-[#1a2e32] border border-slate-200 dark:border-[#315f68] rounded-xl px-4 py-3 focus:border-primary focus:ring-1 focus:ring-primary outline-none text-slate-900 dark:text-white"
+                   placeholder="例：教室" />
+            {% if circle_form and circle_form.place and circle_form.place.errors %}
               <p class="text-xs text-red-300">{{ circle_form.place.errors|striptags }}</p>
             {% endif %}
           </div>
 
           <div class="flex flex-col gap-2">
             <label class="text-sm font-bold text-slate-700 dark:text-[#90c1cb] ml-1">活動頻度</label>
-
-            <!-- choicesを使ってるなら valueは weekly1 等にする -->
-            <select
-              name="frequency"
-              class="w-full bg-white dark:bg-[#1a2e32] border border-slate-200 dark:border-[#315f68] rounded-xl px-4 py-3 focus:border-primary focus:ring-1 focus:ring-primary outline-none text-slate-900 dark:text-white appearance-none">
+            <select name="frequency"
+                    class="w-full bg-white dark:bg-[#1a2e32] border border-slate-200 dark:border-[#315f68] rounded-xl px-4 py-3 focus:border-primary focus:ring-1 focus:ring-primary outline-none text-slate-900 dark:text-white appearance-none">
               {% with f=circle.frequency %}
                 <option value="weekly1" {% if f == "weekly1" %}selected{% endif %}>週1回</option>
                 <option value="weekly2" {% if f == "weekly2" %}selected{% endif %}>週2回</option>
@@ -125,60 +145,76 @@
                 <option value="irregular" {% if f == "irregular" %}selected{% endif %}>不定期</option>
               {% endwith %}
             </select>
-
-            {% if circle_form and circle_form.frequency.errors %}
+            {% if circle_form and circle_form.frequency and circle_form.frequency.errors %}
               <p class="text-xs text-red-300">{{ circle_form.frequency.errors|striptags }}</p>
             {% endif %}
           </div>
         </div>
 
-        <!-- SNSリンク -->
         <div class="flex flex-col gap-2">
           <label class="text-sm font-bold text-slate-700 dark:text-[#90c1cb] ml-1">SNSリンク</label>
 
           <div class="flex flex-col gap-3">
             <div class="relative flex items-center">
               <span class="absolute left-4 material-symbols-outlined text-slate-400">link</span>
-              <input
-                name="x_url"
-                type="url"
-                value="{{ circle.x_url|default_if_none:'' }}"
-                class="w-full bg-white dark:bg-[#1a2e32] border border-slate-200 dark:border-[#315f68] rounded-xl pl-12 pr-4 py-3 focus:border-primary focus:ring-1 focus:ring-primary outline-none text-slate-900 dark:text-white"
-                placeholder="X (旧Twitter) URL"
-              />
+              <input name="x_url" type="url"
+                     value="{{ circle.x_url|default_if_none:'' }}"
+                     class="w-full bg-white dark:bg-[#1a2e32] border border-slate-200 dark:border-[#315f68] rounded-xl pl-12 pr-4 py-3 focus:border-primary focus:ring-1 focus:ring-primary outline-none text-slate-900 dark:text-white"
+                     placeholder="X (旧Twitter) URL" />
             </div>
-            {% if circle_form and circle_form.x_url.errors %}
+            {% if circle_form and circle_form.x_url and circle_form.x_url.errors %}
               <p class="text-xs text-red-300">{{ circle_form.x_url.errors|striptags }}</p>
             {% endif %}
 
             <div class="relative flex items-center">
               <span class="absolute left-4 material-symbols-outlined text-slate-400">link</span>
-              <input
-                name="instagram_url"
-                type="url"
-                value="{{ circle.instagram_url|default_if_none:'' }}"
-                class="w-full bg-white dark:bg-[#1a2e32] border border-slate-200 dark:border-[#315f68] rounded-xl pl-12 pr-4 py-3 focus:border-primary focus:ring-1 focus:ring-primary outline-none text-slate-900 dark:text-white"
-                placeholder="Instagram URL"
-              />
+              <input name="instagram_url" type="url"
+                     value="{{ circle.instagram_url|default_if_none:'' }}"
+                     class="w-full bg-white dark:bg-[#1a2e32] border border-slate-200 dark:border-[#315f68] rounded-xl pl-12 pr-4 py-3 focus:border-primary focus:ring-1 focus:ring-primary outline-none text-slate-900 dark:text-white"
+                     placeholder="Instagram URL" />
             </div>
-            {% if circle_form and circle_form.instagram_url.errors %}
+            {% if circle_form and circle_form.instagram_url and circle_form.instagram_url.errors %}
               <p class="text-xs text-red-300">{{ circle_form.instagram_url.errors|striptags }}</p>
             {% endif %}
           </div>
         </div>
 
-        <!-- 新歓ステータス：Circleに持ってないならここは消す（重要） -->
-        {# Circleモデルに status が無いなら、このブロックは削除してOK #}
-
       </div>
-
-      <div class="pt-4">
-        <button class="w-full py-4 rounded-xl bg-red-50 dark:bg-red-900/10 text-red-500 font-bold border border-red-100 dark:border-red-900/20"
-                type="button">
-          サークル情報を削除
-        </button>
-      </div>
-
     </form>
   </div>
 </section>
+
+<script>
+  // Avatar preview
+  const avatarInput = document.getElementById('id_avatar');
+  const avatarPreview = document.getElementById('avatarPreview');
+
+  if (avatarInput && avatarPreview) {
+    avatarInput.addEventListener('change', () => {
+      const file = avatarInput.files && avatarInput.files[0];
+      if (!file) return;
+      avatarPreview.style.backgroundImage = `url('${URL.createObjectURL(file)}')`;
+    });
+  }
+
+  // Cover preview
+  const coverInput = document.getElementById('id_cover_image');
+  let coverPreview = document.getElementById('coverPreview');
+
+  if (coverInput && coverPreview) {
+    coverInput.addEventListener('change', () => {
+      const file = coverInput.files && coverInput.files[0];
+      if (!file) return;
+      const url = URL.createObjectURL(file);
+
+      if (coverPreview.tagName !== 'IMG') {
+        const img = document.createElement('img');
+        img.id = 'coverPreview';
+        img.className = 'h-full w-full object-cover';
+        coverPreview.replaceWith(img);
+        coverPreview = img;
+      }
+      coverPreview.src = url;
+    });
+  }
+</script>

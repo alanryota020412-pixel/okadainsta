@@ -50,21 +50,67 @@
       <h3 class="text-sm font-bold text-slate-200 mb-2">サークルプロフィール</h3>
 
       {% if circle_results %}
-        <div class="space-y-3">
+        <div class="grid gap-4">
+
           {% for c in circle_results %}
-            <button type="button"
-                    onclick="openCircleProfile({{ c.id }})"
-                    class="w-full text-left rounded-xl border border-slate-700/40 bg-slate-900/20 p-4">
-              <div class="text-base font-bold text-white">{{ c.name }}</div>
-              <div class="text-xs text-slate-300 mt-1">
-                {{ c.place|default:"" }} /
-                {{ c.get_frequency_display|default:c.frequency }}
-              </div>
-              <div class="text-xs text-slate-400 mt-2 line-clamp-2">
-                {{ c.bio|default:"" }}
-              </div>
-            </button>
+            <div class="rounded-2xl overflow-hidden bg-surface-dark border border-slate-700/40 shadow-sm">
+
+              <!-- 画像（cover） -->
+              <button type="button" class="w-full block text-left" onclick="openCircleProfile({{ c.id }})">
+                <div class="relative h-44 w-full">
+                  {% if c.cover_image %}
+                    <img src="{{ c.cover_image.url }}" class="h-full w-full object-cover" alt="cover">
+                  {% else %}
+                    <div class="h-full w-full bg-slate-800"></div>
+                  {% endif %}
+
+                  <!-- 左上タグ（カテゴリがある場合のみ） -->
+                  {% if c.category %}
+                    <div class="absolute top-3 left-3 rounded-lg bg-black/55 px-3 py-1 text-xs font-bold text-white">
+                      {{ c.category }}
+                    </div>
+                  {% endif %}
+
+                  <!-- 右上お気に入り（見た目だけ） -->
+                  <div class="absolute top-3 right-3 size-10 rounded-full bg-black/45 grid place-items-center">
+                    <span class="material-symbols-outlined text-white">favorite</span>
+                  </div>
+                </div>
+
+                <!-- 本文 -->
+                <div class="p-4">
+                  <div class="text-xl font-extrabold text-white">
+                    {{ c.name|default:"サークル名未設定" }}
+                  </div>
+
+                  <div class="mt-2 text-sm text-slate-300 leading-relaxed line-clamp-2">
+                    {{ c.bio|default:c.description|default:"紹介文が未設定です。" }}
+                  </div>
+
+                  <!-- メタ情報 -->
+                  <div class="mt-3 flex flex-wrap items-center gap-4 text-xs text-slate-400">
+                    <div class="inline-flex items-center gap-1">
+                      <span class="material-symbols-outlined" style="font-size:16px;">location_on</span>
+                      <span>{{ c.place|default:"未設定" }}</span>
+                    </div>
+
+                    <div class="inline-flex items-center gap-1">
+                      <span class="material-symbols-outlined" style="font-size:16px;">calendar_month</span>
+                      <span>{{ c.get_frequency_display|default:"未設定" }}</span>
+                    </div>
+                  </div>
+
+                  <!-- 詳細ボタン -->
+                  <div class="mt-4">
+                    <div class="w-full rounded-xl bg-primary text-background-dark py-3 font-bold text-center hover:opacity-95">
+                      詳細を見る
+                    </div>
+                  </div>
+                </div>
+              </button>
+            </div>
           {% endfor %}
+
         </div>
       {% else %}
         <div class="text-sm text-slate-400">該当するサークルプロフィールがありません</div>
@@ -74,7 +120,7 @@
 
   <div class="mt-5 grid gap-3">
     {% for p in search_results %}
-      <!-- ここから下は投稿一覧（そのまま） -->
+      <!-- 投稿一覧（そのまま） -->
       <article class="rounded-2xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-800 overflow-hidden">
         <button type="button" class="w-full block" onclick="openPostModal({{ p.id }})">
           {% if p.image %}

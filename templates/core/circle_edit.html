@@ -1,0 +1,93 @@
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+
+<!-- 背景（カバー） -->
+<div style="position:relative; width:100%; height:180px; border-radius:16px; overflow:hidden; margin-bottom:60px;">
+  {% if circle.cover_image %}
+    <img id="coverPreview" src="{{ circle.cover_image.url }}"
+         style="width:100%; height:100%; object-fit:cover;">
+  {% else %}
+    <div id="coverPreview" style="width:100%; height:100%;"></div>
+  {% endif %}
+
+  <!-- 背景画像を選択 -->
+  <div style="position:absolute; right:12px; bottom:12px;">
+    {{ form.cover_image }}
+  </div>
+
+  <!-- アイコン（既存の丸をここに重ねたいなら） -->
+  <div style="position:absolute; left:50%; bottom:-48px; transform:translateX(-50%);">
+    <!-- ここは今あなたが持ってるアイコン表示ブロックに置き換えてOK -->
+  </div>
+</div>
+
+  <hr/>
+
+  <!-- アイコン -->
+  <div>
+    <label>サークル画像（アイコン）を変更</label><br />
+    {% if circle.icon_image %}
+      <img id="iconPreview" src="{{ circle.icon_image.url }}" style="width:120px; height:120px; object-fit:cover; border-radius:50%;">
+    {% else %}
+      <img id="iconPreview" style="display:none; width:120px; height:120px; object-fit:cover; border-radius:50%;">
+    {% endif %}
+    {{ form.icon_image }}
+  </div>
+
+  <hr/>
+
+  <!-- 既存フィールド -->
+  <div>
+    <label>サークル名</label>
+    {{ form.name }}
+  </div>
+
+  <div>
+    <label>活動内容</label>
+    {{ form.description }}
+  </div>
+
+  <button type="submit">保存</button>
+</form>
+
+<script>
+  const iconInput = document.querySelector('input[name="icon_image"]');
+  const coverInput = document.querySelector('input[name="cover_image"]');
+  const iconPreview = document.getElementById('iconPreview');
+  const coverPreview = document.getElementById('coverPreview');
+
+  function previewImage(input, imgEl) {
+    const file = input.files && input.files[0];
+    if (!file) return;
+    const url = URL.createObjectURL(file);
+    imgEl.src = url;
+    imgEl.style.display = "block";
+  }
+
+  if (iconInput) iconInput.addEventListener('change', () => previewImage(iconInput, iconPreview));
+  if (coverInput) coverInput.addEventListener('change', () => previewImage(coverInput, coverPreview));
+</script>
+
+<script>
+  const coverInput = document.querySelector('input[name="cover_image"]');
+  const coverPreview = document.getElementById('coverPreview');
+
+  if (coverInput && coverPreview) {
+    coverInput.addEventListener('change', () => {
+      const f = coverInput.files && coverInput.files[0];
+      if (!f) return;
+      const url = URL.createObjectURL(f);
+
+      // coverPreviewがdivならimgに差し替える
+      if (coverPreview.tagName !== "IMG") {
+        const img = document.createElement("img");
+        img.id = "coverPreview";
+        img.style.width = "100%";
+        img.style.height = "100%";
+        img.style.objectFit = "cover";
+        coverPreview.replaceWith(img);
+      }
+      document.getElementById("coverPreview").src = url;
+    });
+  }
+</script>

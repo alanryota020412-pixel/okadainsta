@@ -10,7 +10,7 @@ from django.views.decorators.http import require_POST
 from django.utils.dateparse import parse_datetime
 from django.views.decorators.csrf import csrf_exempt
 
-from .forms import CircleForm, PostCreateForm, ProfileForm
+from .forms import CircleForm, PostCreateForm, ProfileForm, CircleEditForm
 from .models import (
     Circle,
     Conversation,
@@ -164,6 +164,20 @@ def app(request):
 
     return render(request, "core/app.html", ctx)
 
+
+@login_required
+def circle_edit(request, circle_id):
+    circle = get_object_or_404(Circle, id=circle_id)
+
+    if request.method == "POST":
+        form = CircleEditForm(request.POST, request.FILES, instance=circle)
+        if form.is_valid():
+            form.save()
+            return redirect("circle_detail", circle_id=circle.id)
+    else:
+        form = CircleEditForm(instance=circle)
+
+    return render(request, "core/circle_edit.html", {"form": form, "circle": circle})
 
 # -------------------------
 # Post Detail JSON

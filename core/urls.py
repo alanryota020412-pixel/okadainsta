@@ -1,5 +1,7 @@
-from django.urls import path
+from django.urls import path, include
 from . import views
+from django.conf import settings
+from django.conf.urls.static import static
 
 app_name = "core"
 
@@ -15,6 +17,7 @@ urlpatterns = [
 
     # Favorite（views.py は toggle_favorite / 引数は pk）
     path("posts/<int:pk>/favorite/", views.toggle_favorite, name="post_toggle_favorite"),
+    path("circles/<int:circle_id>/edit/", views.circle_edit, name="circle_edit"),
 
     # Post detail（JSON）
     path("posts/<int:pk>/json/", views.post_detail_json, name="post_detail_json"),
@@ -34,3 +37,6 @@ urlpatterns = [
     path("notifications/mark-read/", views.notifications_mark_read, name="notifications_mark_read"),
     path("<int:pk>/json/", views.post_detail_json, name="post_detail_json"),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
