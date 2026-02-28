@@ -10,7 +10,7 @@ from django.views.decorators.http import require_POST
 from django.utils.dateparse import parse_datetime
 from django.views.decorators.csrf import csrf_exempt
 
-from .forms import CircleForm, PostCreateForm, ProfileForm
+from .forms import CircleForm, PostCreateForm, ProfileForm, CircleEditForm
 from .models import (
     Circle,
     Conversation,
@@ -116,6 +116,7 @@ def app(request):
     saved_posts = []
     unread_notifs = 0
     conversations = []
+    my_posts_previews = []
     profile_form = None
 
     if request.user.is_authenticated:
@@ -123,6 +124,14 @@ def app(request):
         circle, _ = Circle.objects.get_or_create(owner=request.user)
 
         my_posts = Post.objects.filter(author=request.user).order_by("-created_at")[:50]
+        my_posts_preview = (
+          Post.objects.filter(author=request.user)
+          .annotate(
+              favs_count=Count("favorites", distinct=True),
+              views_count=Count("views", distinct=True),
+          )
+          .order_by("-created_at")[:20]
+        )
         saved_posts = Post.objects.filter(favorites=request.user).order_by("-created_at")[:50]
         unread_notifs = Notification.objects.filter(user=request.user, is_read=False).count()
 
@@ -160,10 +169,25 @@ def app(request):
         "unread_notifs": unread_notifs,
         "conversations": conversations,
         "profile_form": profile_form,
+        "my_posts_preview":my_posts_preview,
     }
 
     return render(request, "core/app.html", ctx)
 
+
+@login_required
+def circle_edit(request, circle_id):
+    circle = get_object_or_404(Circle, id=circle_id)
+
+    if request.method == "POST":
+        form = CircleEditForm(request.POST, request.FILES, instance=circle)
+        if form.is_valid():
+            form.save()
+            return redirect("circle_detail", circle_id=circle.id)
+    else:
+        form = CircleEditForm(instance=circle)
+
+    return render(request, "core/circle_edit.html", {"form": form, "circle": circle})
 
 # -------------------------
 # Post Detail JSON

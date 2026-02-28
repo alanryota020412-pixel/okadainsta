@@ -27,11 +27,19 @@ class Profile(models.Model):
     def __str__(self):
         return self.display_name or f"profile:{self.user_id}"
 
+def circle_icon_path(instance, filename):
+    return f"circles/{instance.id}/icon/{filename}"
+
+def circle_cover_path(instance, filename):
+    return f"circles/{instance.id}/cover/{filename}"
 
 class Circle(models.Model):
     owner = models.OneToOneField(User, on_delete=models.CASCADE, related_name="circle")
 
     name = models.CharField(max_length=100, blank=True, default="")
+    description = models.TextField(blank=True)
+    icon_image = models.ImageField(upload_to=circle_icon_path, blank=True, null=True)
+    cover_image = models.ImageField(upload_to=circle_cover_path, blank=True, null=True)
     bio = models.TextField(blank=True, default="")
     avatar = models.ImageField(upload_to="circle_avatars/", blank=True, null=True)
 
@@ -82,6 +90,7 @@ class Post(models.Model):
     detail = models.TextField(blank=True)
     event_at = models.DateTimeField()
     image = models.ImageField(upload_to="posts/", blank=True, null=True)
+    body = models.TextField(blank=True)
 
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="open")
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default="other")
