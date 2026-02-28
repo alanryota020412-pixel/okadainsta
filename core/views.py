@@ -116,6 +116,7 @@ def app(request):
     saved_posts = []
     unread_notifs = 0
     conversations = []
+    my_posts_previews = []
     profile_form = None
 
     if request.user.is_authenticated:
@@ -123,6 +124,14 @@ def app(request):
         circle, _ = Circle.objects.get_or_create(owner=request.user)
 
         my_posts = Post.objects.filter(author=request.user).order_by("-created_at")[:50]
+        my_posts_preview = (
+          Post.objects.filter(author=request.user)
+          .annotate(
+              favs_count=Count("favorites", distinct=True),
+              views_count=Count("views", distinct=True),
+          )
+          .order_by("-created_at")[:20]
+        )
         saved_posts = Post.objects.filter(favorites=request.user).order_by("-created_at")[:50]
         unread_notifs = Notification.objects.filter(user=request.user, is_read=False).count()
 
@@ -160,6 +169,7 @@ def app(request):
         "unread_notifs": unread_notifs,
         "conversations": conversations,
         "profile_form": profile_form,
+        "my_posts_preview":my_posts_preview,
     }
 
     return render(request, "core/app.html", ctx)
